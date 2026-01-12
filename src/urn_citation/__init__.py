@@ -6,6 +6,6 @@ except PackageNotFoundError:
     # Package is not installed (e.g., running from a local script)
     __version__ = "unknown"
 
-
-
 from .urns import Urn, CtsUrn
+
+__all__ = ["Urn", "CtsUrn"]
