@@ -1,6 +1,6 @@
 [project]
 name = "urn-citation"
-version = "0.0.1"
+version = "0.1.0"
 description = "A Python library for working with CITE architecture URNs for scholarly citation."
 readme = "README.md"
 requires-python = ">=3.14"
