@@ -5,3 +5,17 @@ description = "A Python library for working with CITE architecture URNs for scho
 readme = "README.md"
 requires-python = ">=3.14"
 dependencies = []
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[dependency-groups]
+dev = [
+    "pytest>=9.0.2",
+]
+
+[project.optional-dependencies]
+docs = [
+    "mkdocs>=1.6.1",
+    "mkdocs-material>=9.7.1",
+]
