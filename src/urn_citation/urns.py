@@ -51,7 +51,7 @@ class CtsUrn(Urn):
      
         if not passage_component:
             passage_component = None
-            
+
         return cls(
             urn_type=urn_type,
             namespace=namespace,
@@ -62,4 +62,12 @@ class CtsUrn(Urn):
             passage=passage_component
         )
         
+
+# Functions for 0.1 release:
+#
+# - isrange
+# - get_range_end, get_range_start
+# - valid_urn_string
+
+
 
