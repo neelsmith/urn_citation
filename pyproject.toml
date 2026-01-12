@@ -4,7 +4,9 @@ version = "0.0.1"
 description = "A Python library for working with CITE architecture URNs for scholarly citation."
 readme = "README.md"
 requires-python = ">=3.14"
-dependencies = []
+dependencies = [
+    "pydantic>=2.12.5",
+]
 
 [tool.setuptools.packages.find]
 where = ["src"]
