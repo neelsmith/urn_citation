@@ -1,6 +1,8 @@
 # `urn_citation`
 
 A Python library for working with CITE architecture URNs for scholarly citation.
+
+
 ## Overview
 
 `urn_citation` provides Pydantic-based models for representing and parsing Uniform Resource Names (URNs) according to the CITE architecture. Currently, it supports Canonical Text Service (CTS) URNs, which are used to identify passages of canonically citable texts with hierarchical work and passage components.
@@ -80,25 +82,6 @@ Where:
 - **work_component**: One to four dot-delimited identifiers for text group, work, version, and exemplar
 - **passage_component**: Optional passage reference, may contain a single passage or range (with hyphen)
 
-### Work Component Examples
-
-- `tlg0012` - Text group only
-- `tlg0012.001` - Text group and work
-- `tlg0012.001.wacl1` - Text group, work, and version
-- `tlg0012.001.wacl1.ex1` - All four components (text group, work, version, exemplar)
-
-## Requirements
-
-- Python >= 3.14
-- Pydantic >= 2.12.5
-
-## Testing
-
-Run the test suite with pytest:
-
-```bash
-pytest tests/test_urns.py -v
-```
 
 ## License
 

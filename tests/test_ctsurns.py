@@ -262,6 +262,42 @@ class TestCtsUrnValidString:
         assert CtsUrn.valid_string("") is False
         assert CtsUrn.valid_string("not:a:urn") is False
 
+    def test_valid_string_successive_periods_in_work(self):
+        """Test valid_string returns False for successive periods in work component."""
+        assert CtsUrn.valid_string("urn:cts:greekLit:tlg0012..001:") is False
+        assert CtsUrn.valid_string("urn:cts:greekLit:tlg0012.001..wacl1:") is False
+        assert CtsUrn.valid_string("urn:cts:greekLit:..tlg0012:") is False
+
+    def test_valid_string_successive_periods_in_passage(self):
+        """Test valid_string returns False for successive periods in passage component."""
+        assert CtsUrn.valid_string("urn:cts:greekLit:tlg0012:1..1") is False
+        assert CtsUrn.valid_string("urn:cts:greekLit:tlg0012:1.1-1..5") is False
+        assert CtsUrn.valid_string("urn:cts:greekLit:tlg0012:..1.1") is False
+
+
+class TestCtsUrnFromString:
+    """Tests for the from_string classmethod."""
+
+    def test_from_string_successive_periods_in_work(self):
+        """Test from_string raises ValueError for successive periods in work component."""
+        with pytest.raises(ValueError) as exc_info:
+            CtsUrn.from_string("urn:cts:greekLit:tlg0012..001:")
+        assert "successive periods" in str(exc_info.value)
+
+        with pytest.raises(ValueError) as exc_info:
+            CtsUrn.from_string("urn:cts:greekLit:tlg0012.001..wacl1:")
+        assert "successive periods" in str(exc_info.value)
+
+    def test_from_string_successive_periods_in_passage(self):
+        """Test from_string raises ValueError for successive periods in passage component."""
+        with pytest.raises(ValueError) as exc_info:
+            CtsUrn.from_string("urn:cts:greekLit:tlg0012:1..1")
+        assert "successive periods" in str(exc_info.value)
+
+        with pytest.raises(ValueError) as exc_info:
+            CtsUrn.from_string("urn:cts:greekLit:tlg0012:1.1-1..5")
+        assert "successive periods" in str(exc_info.value)
+
 
 class TestCtsUrnWorkEquals:
     """Tests for the work_equals method."""

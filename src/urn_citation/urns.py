@@ -43,6 +43,12 @@ class CtsUrn(Urn):
         if len(rangeparts) > 2:
             raise ValueError(f"Passage component of CTS URN cannot have more than one hyphen to indicate a range, found {len(rangeparts)-1} hyphenated parts in {passage_component}.")
         
+        if ".." in work_component:
+            raise ValueError(f"Work component of CTS URN cannot contain successive periods, found in {work_component}.")
+        
+        if ".." in passage_component:
+            raise ValueError(f"Passage component of CTS URN cannot contain successive periods, found in {passage_component}.")
+        
         workparts = work_component.split(".")
         if len(workparts) > 4:
             raise ValueError(f"Work component of CTS URN cannot have more than 4 dot-delimited components, got {len(workparts)} from {work_component}.")
@@ -163,6 +169,10 @@ class CtsUrn(Urn):
             # Check passage component (at most 1 hyphen)
             rangeparts = passage_component.split("-")
             if len(rangeparts) > 2:
+                return False
+            
+            # Check for successive periods in work and passage components
+            if ".." in work_component or ".." in passage_component:
                 return False
             
             # Check work component (at most 4 dot-delimited parts)
