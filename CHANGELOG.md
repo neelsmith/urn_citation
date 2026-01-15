@@ -1,0 +1,38 @@
+# Changelog
+
+All notable changes to this project will be documented in this file.
+
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## 0.2.0 - 2026-01-14
+
+Breaking changes to the `CtsUrn` class.
+
+### Added
+
+- `__str__` method implemented for `CtsUrn` class to provide a string representation of the URN.
+
+### Changed
+
+- Updated unit tests to reflect the addition of the `__str__` method and deletion of `to_string` method.
+
+### Removed
+
+- `to_string` method from `CtsUrn` class as it is redundant with the new `__str__` method.
+
+
+## 0.1.0 - 2026-01-13 
+
+Initial release.
+
+### Added
+
+- `CtsUrn` class to represent and manipulate CTS URNs.
+- Methods for parsing, validating, and formatting CTS URNs.
+- Unit tests for all functionalities of the `CtsUrn` class.
+
+
+
+
+[0.2.0]: https://github.com/username/project/compare/v0.1.0...v0.2.0
+[0.1.0]: https://github.com/username/project/releases/tag/v0.0.1
