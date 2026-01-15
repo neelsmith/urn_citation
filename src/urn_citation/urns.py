@@ -184,7 +184,7 @@ class CtsUrn(Urn):
         except Exception:
             return False
 
-    def work_equals(self, other: "CtsUrn") -> bool:
+    def work_equals(self, other: CtsUrn) -> bool:
         """Check if the work hierarchy is equal to another CtsUrn.
         
         Compares the text_group, work, version, and exemplar fields.
@@ -204,7 +204,7 @@ class CtsUrn(Urn):
 
 
     # rewrite this using a more elegant `getattr` approach, and also add a docstring
-    def work_contains(self, other: "CtsUrn") -> bool:
+    def work_contains(self, other: CtsUrn) -> bool:
         """Check if the work hierarchy contains another CtsUrn.
         
         Returns True if all non-None values of text_group, work, version, and exemplar
@@ -226,7 +226,7 @@ class CtsUrn(Urn):
             return False
         return True
 
-    def passage_equals(self, other: "CtsUrn") -> bool:
+    def passage_equals(self, other: CtsUrn) -> bool:
         """Check if the passage component is equal to another CtsUrn.
         
         Compares the passage field of this CtsUrn with the passage field of another.
@@ -239,7 +239,7 @@ class CtsUrn(Urn):
         """
         return self.passage == other.passage
 
-    def passage_contains(self, other: "CtsUrn") -> bool:
+    def passage_contains(self, other: CtsUrn) -> bool:
         """Check if the passage component contains another CtsUrn.
         
         Returns True if:
@@ -271,7 +271,7 @@ class CtsUrn(Urn):
         
         return False
 
-    def contains(self, other: "CtsUrn") -> bool:
+    def contains(self, other: CtsUrn) -> bool:
         """Check if this CtsUrn contains another CtsUrn.
         
         Returns True if both the work hierarchy and passage contain the other.
@@ -283,8 +283,128 @@ class CtsUrn(Urn):
             bool: True if both work_contains and passage_contains are True, False otherwise.
         """
         return self.work_contains(other) and self.passage_contains(other)
-
+   
+    def drop_passage(self) -> CtsUrn:
+        """Create a new CtsUrn without the passage component.
         
+        Returns a new CtsUrn instance with the same work hierarchy but
+        with the passage set to None.
+        
+        Returns:
+            CtsUrn: A new CtsUrn instance without the passage component.
+        """
+        return CtsUrn(
+            urn_type=self.urn_type,
+            namespace=self.namespace,
+            text_group=self.text_group,
+            work=self.work,
+            version=self.version,
+            exemplar=self.exemplar,
+            passage=None
+        )
+    
+    def set_passage(self, new_passage: str) -> CtsUrn:
+        """Create a new CtsUrn with a specified passage component.
+        
+        Returns a new CtsUrn instance with the same work hierarchy but
+        with the passage set to the provided new_passage value.
+        
+        Args:
+            new_passage (str | None): The new passage component to set.
+        
+        Returns:
+            CtsUrn: A new CtsUrn instance with the updated passage component.
+        """
+        return CtsUrn(
+            urn_type=self.urn_type,
+            namespace=self.namespace,
+            text_group=self.text_group,
+            work=self.work,
+            version=self.version,
+            exemplar=self.exemplar,
+            passage=new_passage
+        )
 
 
+    def drop_version(self) -> CtsUrn:
+        """Create a new CtsUrn without the version component.
+        
+        Returns a new CtsUrn instance with the same work hierarchy but
+        with the version set to None.
+        
+        Returns:
+            CtsUrn: A new CtsUrn instance without the version component.
+        """
+        return CtsUrn(
+            urn_type=self.urn_type,
+            namespace=self.namespace,
+            text_group=self.text_group,
+            work=self.work,
+            version=None,
+            exemplar=self.exemplar,
+            passage=self.passage
+        )
+    
 
+    def set_version(self, new_version: str) -> CtsUrn:
+        """Create a new CtsUrn with a specified version component.
+        
+        Returns a new CtsUrn instance with the same work hierarchy but
+        with the version set to the provided new_version value.
+        
+        Args:
+            new_version (str | None): The new version component to set.
+        
+        Returns:
+            CtsUrn: A new CtsUrn instance with the updated version component.
+        """
+        return CtsUrn(
+            urn_type=self.urn_type,
+            namespace=self.namespace,
+            text_group=self.text_group,
+            work=self.work,
+            version=new_version,
+            exemplar=self.exemplar,
+            passage=self.passage
+        )
+    
+    def drop_exemplar(self) -> CtsUrn:
+        """Create a new CtsUrn without the exemplar component.
+        
+        Returns a new CtsUrn instance with the same work hierarchy but
+        with the exemplar set to None.
+        
+        Returns:
+            CtsUrn: A new CtsUrn instance without the exemplar component.
+        """
+        return CtsUrn(
+            urn_type=self.urn_type,
+            namespace=self.namespace,
+            text_group=self.text_group,
+            work=self.work,
+            version=self.version,
+            exemplar=None,
+            passage=self.passage
+        )
+    
+    def set_exemplar(self, new_exemplar: str) -> CtsUrn:
+        """Create a new CtsUrn with a specified exemplar component.
+        
+        Returns a new CtsUrn instance with the same work hierarchy but
+        with the exemplar set to the provided new_exemplar value.
+        
+        Args:
+            new_exemplar (str | None): The new exemplar component to set.
+        
+        Returns:
+            CtsUrn: A new CtsUrn instance with the updated exemplar component.
+        """
+        return CtsUrn(
+            urn_type=self.urn_type,
+            namespace=self.namespace,
+            text_group=self.text_group,
+            work=self.work,
+            version=self.version,
+            exemplar=new_exemplar,
+            passage=self.passage
+        )
