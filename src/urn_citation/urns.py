@@ -68,7 +68,7 @@ class CtsUrn(Urn):
             passage=passage_component
         )
 
-    def to_string(self) -> str:
+    def __str__(self) -> str:
         """Serialize the CtsUrn to its string representation.
         
         Returns a CTS URN string in the format:

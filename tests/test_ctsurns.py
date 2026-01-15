@@ -49,25 +49,25 @@ class TestCtsUrnCreation:
 
 
 class TestCtsUrnToString:
-    """Tests for the to_string method."""
+    """Tests for the __str__ method."""
 
-    def test_to_string_basic_urn(self):
+    def test_str_basic_urn(self):
         """Test serializing a basic CtsUrn with only required fields."""
         urn = CtsUrn(urn_type="cts", namespace="greekLit", text_group="tlg0012")
-        assert urn.to_string() == "urn:cts:greekLit:tlg0012:"
+        assert str(urn) == "urn:cts:greekLit:tlg0012:"
 
-    def test_to_string_with_work(self):
-        """Test serializing a CtsUrn with work component."""
+    def test_str_with_work(self):
+        """Test serialization of a URN with text_group and work."""
         urn = CtsUrn(
             urn_type="cts",
             namespace="greekLit",
             text_group="tlg0012",
             work="001"
         )
-        assert urn.to_string() == "urn:cts:greekLit:tlg0012.001:"
+        assert str(urn) == "urn:cts:greekLit:tlg0012.001:"
 
-    def test_to_string_with_version(self):
-        """Test serializing a CtsUrn with version component."""
+    def test_str_with_version(self):
+        """Test serialization of a URN with text_group, work, and version."""
         urn = CtsUrn(
             urn_type="cts",
             namespace="greekLit",
@@ -75,10 +75,10 @@ class TestCtsUrnToString:
             work="001",
             version="wacl1"
         )
-        assert urn.to_string() == "urn:cts:greekLit:tlg0012.001.wacl1:"
+        assert str(urn) == "urn:cts:greekLit:tlg0012.001.wacl1:"
 
-    def test_to_string_with_exemplar(self):
-        """Test serializing a CtsUrn with exemplar component."""
+    def test_str_with_exemplar(self):
+        """Test serialization of a URN with text_group, work, version, and exemplar."""
         urn = CtsUrn(
             urn_type="cts",
             namespace="greekLit",
@@ -87,20 +87,20 @@ class TestCtsUrnToString:
             version="wacl1",
             exemplar="ex1"
         )
-        assert urn.to_string() == "urn:cts:greekLit:tlg0012.001.wacl1.ex1:"
+        assert str(urn) == "urn:cts:greekLit:tlg0012.001.wacl1.ex1:"
 
-    def test_to_string_with_passage(self):
-        """Test serializing a CtsUrn with passage component."""
+    def test_str_with_passage(self):
+        """Test serialization of a URN with text_group and passage."""
         urn = CtsUrn(
             urn_type="cts",
             namespace="greekLit",
             text_group="tlg0012",
             passage="1.1"
         )
-        assert urn.to_string() == "urn:cts:greekLit:tlg0012:1.1"
+        assert str(urn) == "urn:cts:greekLit:tlg0012:1.1"
 
-    def test_to_string_with_all_components(self):
-        """Test serializing a CtsUrn with all components."""
+    def test_str_with_all_components(self):
+        """Test serialization of a URN with all components including a range."""
         urn = CtsUrn(
             urn_type="cts",
             namespace="greekLit",
@@ -110,7 +110,7 @@ class TestCtsUrnToString:
             exemplar="ex1",
             passage="1.1-1.5"
         )
-        assert urn.to_string() == "urn:cts:greekLit:tlg0012.001.wacl1.ex1:1.1-1.5"
+        assert str(urn) == "urn:cts:greekLit:tlg0012.001.wacl1.ex1:1.1-1.5"
 
 
 class TestCtsUrnIsRange:
@@ -646,28 +646,28 @@ class TestCtsUrnUrnSimilar:
 
 
 class TestCtsUrnRoundTrip:
-    """Tests for round-trip conversion (from_string -> to_string)."""
+    """Tests for round-trip conversion (from_string -> str)."""
 
-    def test_roundtrip_basic(self):
-        """Test round-trip conversion for basic URN."""
+    def test_roundtrip_basic_urn(self):
+        """Test round-trip for a basic URN."""
         urn_string = "urn:cts:greekLit:tlg0012:"
         urn = CtsUrn.from_string(urn_string)
-        assert urn.to_string() == urn_string
+        assert str(urn) == urn_string
 
     def test_roundtrip_with_work_hierarchy(self):
         """Test round-trip conversion with work hierarchy."""
         urn_string = "urn:cts:greekLit:tlg0012.001.wacl1.ex1:"
         urn = CtsUrn.from_string(urn_string)
-        assert urn.to_string() == urn_string
+        assert str(urn) == urn_string
 
     def test_roundtrip_with_passage(self):
         """Test round-trip conversion with passage."""
         urn_string = "urn:cts:greekLit:tlg0012:1.1-1.5"
         urn = CtsUrn.from_string(urn_string)
-        assert urn.to_string() == urn_string
+        assert str(urn) == urn_string
 
     def test_roundtrip_with_all_components(self):
         """Test round-trip conversion with all components."""
         urn_string = "urn:cts:greekLit:tlg0012.001.wacl1:1.1"
         urn = CtsUrn.from_string(urn_string)
-        assert urn.to_string() == urn_string
+        assert str(urn) == urn_string
