@@ -4,6 +4,19 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 0.4.0 - 2026-01-15
+
+Non-breaking additions to the `CtsUrn` class.
+
+### Added
+
+- `drop_passage` method to create a new `CtsUrn` without the passage component.
+- `set_passage` method to create a new `CtsUrn` with a specified passage component.
+- `drop_version` method to create a new `CtsUrn` without the version component.
+- `set_version` method to create a new `CtsUrn` with a specified version component.
+- `drop_exemplar` method to create a new `CtsUrn` without the exemplar component.
+- `set_exemplar` method to create a new `CtsUrn` with a specified exemplar component.
+
 ## 0.3.0 - 2026-01-15
 
 Breaking changes to the `CtsUrn` class.
@@ -22,7 +35,6 @@ Breaking changes to the `CtsUrn` class.
 ### Removed
 
 - `passage_similar`, `work_similar`, and `urn_similar` methods from `CtsUrn` class as they have been replaced by the new containment methods.
-
 
 
 

@@ -671,3 +671,644 @@ class TestCtsUrnRoundTrip:
         urn_string = "urn:cts:greekLit:tlg0012.001.wacl1:1.1"
         urn = CtsUrn.from_string(urn_string)
         assert str(urn) == urn_string
+
+
+class TestCtsUrnDropPassage:
+    """Tests for the drop_passage method."""
+
+    def test_drop_passage_with_simple_passage(self):
+        """Test drop_passage removes a simple passage component."""
+        urn = CtsUrn(
+            urn_type="cts",
+            namespace="greekLit",
+            text_group="tlg0012",
+            work="001",
+            passage="1.1"
+        )
+        result = urn.drop_passage()
+        assert result.passage is None
+        assert result.text_group == "tlg0012"
+        assert result.work == "001"
+
+    def test_drop_passage_with_range(self):
+        """Test drop_passage removes a range passage."""
+        urn = CtsUrn(
+            urn_type="cts",
+            namespace="greekLit",
+            text_group="tlg0012",
+            passage="1.1-1.5"
+        )
+        result = urn.drop_passage()
+        assert result.passage is None
+        assert result.text_group == "tlg0012"
+
+    def test_drop_passage_with_none_passage(self):
+        """Test drop_passage when passage is already None."""
+        urn = CtsUrn(
+            urn_type="cts",
+            namespace="greekLit",
+            text_group="tlg0012"
+        )
+        result = urn.drop_passage()
+        assert result.passage is None
+        assert result.text_group == "tlg0012"
+
+    def test_drop_passage_preserves_all_work_hierarchy(self):
+        """Test drop_passage preserves all work hierarchy components."""
+        urn = CtsUrn(
+            urn_type="cts",
+            namespace="greekLit",
+            text_group="tlg0012",
+            work="001",
+            version="wacl1",
+            exemplar="ex1",
+            passage="1.1"
+        )
+        result = urn.drop_passage()
+        assert result.passage is None
+        assert result.urn_type == "cts"
+        assert result.namespace == "greekLit"
+        assert result.text_group == "tlg0012"
+        assert result.work == "001"
+        assert result.version == "wacl1"
+        assert result.exemplar == "ex1"
+
+    def test_drop_passage_creates_new_instance(self):
+        """Test drop_passage returns a new CtsUrn instance."""
+        urn = CtsUrn(
+            urn_type="cts",
+            namespace="greekLit",
+            text_group="tlg0012",
+            passage="1.1"
+        )
+        result = urn.drop_passage()
+        assert result is not urn
+        assert urn.passage == "1.1"  # Original unchanged
+
+    def test_drop_passage_serialization(self):
+        """Test that drop_passage result can be serialized correctly."""
+        urn = CtsUrn(
+            urn_type="cts",
+            namespace="greekLit",
+            text_group="tlg0012",
+            work="001",
+            passage="1.1-2.1"
+        )
+        result = urn.drop_passage()
+        assert str(result) == "urn:cts:greekLit:tlg0012.001:"
+
+
+class TestCtsUrnSetPassage:
+    """Tests for the set_passage method."""
+
+    def test_set_passage_from_none(self):
+        """Test set_passage adds a passage when passage is None."""
+        urn = CtsUrn(
+            urn_type="cts",
+            namespace="greekLit",
+            text_group="tlg0012"
+        )
+        result = urn.set_passage("1.1")
+        assert result.passage == "1.1"
+        assert result.text_group == "tlg0012"
+
+    def test_set_passage_replaces_existing(self):
+        """Test set_passage replaces an existing passage."""
+        urn = CtsUrn(
+            urn_type="cts",
+            namespace="greekLit",
+            text_group="tlg0012",
+            passage="1.1"
+        )
+        result = urn.set_passage("2.5")
+        assert result.passage == "2.5"
+        assert result.text_group == "tlg0012"
+
+    def test_set_passage_with_range(self):
+        """Test set_passage with a range passage."""
+        urn = CtsUrn(
+            urn_type="cts",
+            namespace="greekLit",
+            text_group="tlg0012"
+        )
+        result = urn.set_passage("1.1-1.10")
+        assert result.passage == "1.1-1.10"
+        assert result.is_range() is True
+
+    def test_set_passage_replaces_range_with_single(self):
+        """Test set_passage replaces a range with a single passage."""
+        urn = CtsUrn(
+            urn_type="cts",
+            namespace="greekLit",
+            text_group="tlg0012",
+            passage="1.1-1.5"
+        )
+        result = urn.set_passage("2.3")
+        assert result.passage == "2.3"
+        assert result.is_range() is False
+
+    def test_set_passage_preserves_all_work_hierarchy(self):
+        """Test set_passage preserves all work hierarchy components."""
+        urn = CtsUrn(
+            urn_type="cts",
+            namespace="greekLit",
+            text_group="tlg0012",
+            work="001",
+            version="wacl1",
+            exemplar="ex1",
+            passage="1.1"
+        )
+        result = urn.set_passage("2.5")
+        assert result.passage == "2.5"
+        assert result.urn_type == "cts"
+        assert result.namespace == "greekLit"
+        assert result.text_group == "tlg0012"
+        assert result.work == "001"
+        assert result.version == "wacl1"
+        assert result.exemplar == "ex1"
+
+    def test_set_passage_creates_new_instance(self):
+        """Test set_passage returns a new CtsUrn instance."""
+        urn = CtsUrn(
+            urn_type="cts",
+            namespace="greekLit",
+            text_group="tlg0012",
+            passage="1.1"
+        )
+        result = urn.set_passage("2.5")
+        assert result is not urn
+        assert urn.passage == "1.1"  # Original unchanged
+
+    def test_set_passage_serialization(self):
+        """Test that set_passage result can be serialized correctly."""
+        urn = CtsUrn(
+            urn_type="cts",
+            namespace="greekLit",
+            text_group="tlg0012",
+            work="001"
+        )
+        result = urn.set_passage("3.14")
+        assert str(result) == "urn:cts:greekLit:tlg0012.001:3.14"
+
+    def test_set_passage_with_complex_hierarchical_passage(self):
+        """Test set_passage with a complex hierarchical passage."""
+        urn = CtsUrn(
+            urn_type="cts",
+            namespace="greekLit",
+            text_group="tlg0012",
+            work="001"
+        )
+        result = urn.set_passage("1.2.3.4")
+        assert result.passage == "1.2.3.4"
+        assert str(result) == "urn:cts:greekLit:tlg0012.001:1.2.3.4"
+
+    def test_set_passage_empty_string(self):
+        """Test set_passage with an empty string."""
+        urn = CtsUrn(
+            urn_type="cts",
+            namespace="greekLit",
+            text_group="tlg0012"
+        )
+        result = urn.set_passage("")
+        assert result.passage == ""
+        assert str(result) == "urn:cts:greekLit:tlg0012:"
+
+
+class TestCtsUrnDropVersion:
+    """Tests for the drop_version method."""
+
+    def test_drop_version_with_version_present(self):
+        """Test drop_version removes a version component."""
+        urn = CtsUrn(
+            urn_type="cts",
+            namespace="greekLit",
+            text_group="tlg0012",
+            work="001",
+            version="wacl1"
+        )
+        result = urn.drop_version()
+        assert result.version is None
+        assert result.text_group == "tlg0012"
+        assert result.work == "001"
+
+    def test_drop_version_when_none(self):
+        """Test drop_version when version is already None."""
+        urn = CtsUrn(
+            urn_type="cts",
+            namespace="greekLit",
+            text_group="tlg0012",
+            work="001"
+        )
+        result = urn.drop_version()
+        assert result.version is None
+        assert result.work == "001"
+
+    def test_drop_version_preserves_exemplar(self):
+        """Test drop_version preserves exemplar component."""
+        urn = CtsUrn(
+            urn_type="cts",
+            namespace="greekLit",
+            text_group="tlg0012",
+            work="001",
+            version="wacl1",
+            exemplar="ex1"
+        )
+        result = urn.drop_version()
+        assert result.version is None
+        assert result.exemplar == "ex1"
+
+    def test_drop_version_preserves_passage(self):
+        """Test drop_version preserves passage component."""
+        urn = CtsUrn(
+            urn_type="cts",
+            namespace="greekLit",
+            text_group="tlg0012",
+            work="001",
+            version="wacl1",
+            passage="1.1"
+        )
+        result = urn.drop_version()
+        assert result.version is None
+        assert result.passage == "1.1"
+
+    def test_drop_version_preserves_all_other_components(self):
+        """Test drop_version preserves all non-version components."""
+        urn = CtsUrn(
+            urn_type="cts",
+            namespace="greekLit",
+            text_group="tlg0012",
+            work="001",
+            version="wacl1",
+            exemplar="ex1",
+            passage="1.1"
+        )
+        result = urn.drop_version()
+        assert result.version is None
+        assert result.urn_type == "cts"
+        assert result.namespace == "greekLit"
+        assert result.text_group == "tlg0012"
+        assert result.work == "001"
+        assert result.exemplar == "ex1"
+        assert result.passage == "1.1"
+
+    def test_drop_version_creates_new_instance(self):
+        """Test drop_version returns a new CtsUrn instance."""
+        urn = CtsUrn(
+            urn_type="cts",
+            namespace="greekLit",
+            text_group="tlg0012",
+            work="001",
+            version="wacl1"
+        )
+        result = urn.drop_version()
+        assert result is not urn
+        assert urn.version == "wacl1"  # Original unchanged
+
+    def test_drop_version_serialization(self):
+        """Test that drop_version result can be serialized correctly."""
+        urn = CtsUrn(
+            urn_type="cts",
+            namespace="greekLit",
+            text_group="tlg0012",
+            work="001",
+            version="wacl1",
+            passage="1.1"
+        )
+        result = urn.drop_version()
+        assert str(result) == "urn:cts:greekLit:tlg0012.001:1.1"
+
+
+class TestCtsUrnSetVersion:
+    """Tests for the set_version method."""
+
+    def test_set_version_from_none(self):
+        """Test set_version adds a version when version is None."""
+        urn = CtsUrn(
+            urn_type="cts",
+            namespace="greekLit",
+            text_group="tlg0012",
+            work="001"
+        )
+        result = urn.set_version("wacl1")
+        assert result.version == "wacl1"
+        assert result.work == "001"
+
+    def test_set_version_replaces_existing(self):
+        """Test set_version replaces an existing version."""
+        urn = CtsUrn(
+            urn_type="cts",
+            namespace="greekLit",
+            text_group="tlg0012",
+            work="001",
+            version="wacl1"
+        )
+        result = urn.set_version("perseus1")
+        assert result.version == "perseus1"
+        assert result.work == "001"
+
+    def test_set_version_preserves_exemplar(self):
+        """Test set_version preserves exemplar component."""
+        urn = CtsUrn(
+            urn_type="cts",
+            namespace="greekLit",
+            text_group="tlg0012",
+            work="001",
+            exemplar="ex1"
+        )
+        result = urn.set_version("wacl1")
+        assert result.version == "wacl1"
+        assert result.exemplar == "ex1"
+
+    def test_set_version_preserves_passage(self):
+        """Test set_version preserves passage component."""
+        urn = CtsUrn(
+            urn_type="cts",
+            namespace="greekLit",
+            text_group="tlg0012",
+            work="001",
+            passage="1.1"
+        )
+        result = urn.set_version("wacl1")
+        assert result.version == "wacl1"
+        assert result.passage == "1.1"
+
+    def test_set_version_preserves_all_other_components(self):
+        """Test set_version preserves all non-version components."""
+        urn = CtsUrn(
+            urn_type="cts",
+            namespace="greekLit",
+            text_group="tlg0012",
+            work="001",
+            version="old",
+            exemplar="ex1",
+            passage="1.1"
+        )
+        result = urn.set_version("new")
+        assert result.version == "new"
+        assert result.urn_type == "cts"
+        assert result.namespace == "greekLit"
+        assert result.text_group == "tlg0012"
+        assert result.work == "001"
+        assert result.exemplar == "ex1"
+        assert result.passage == "1.1"
+
+    def test_set_version_creates_new_instance(self):
+        """Test set_version returns a new CtsUrn instance."""
+        urn = CtsUrn(
+            urn_type="cts",
+            namespace="greekLit",
+            text_group="tlg0012",
+            work="001",
+            version="wacl1"
+        )
+        result = urn.set_version("perseus1")
+        assert result is not urn
+        assert urn.version == "wacl1"  # Original unchanged
+
+    def test_set_version_serialization(self):
+        """Test that set_version result can be serialized correctly."""
+        urn = CtsUrn(
+            urn_type="cts",
+            namespace="greekLit",
+            text_group="tlg0012",
+            work="001",
+            passage="1.1"
+        )
+        result = urn.set_version("wacl1")
+        assert str(result) == "urn:cts:greekLit:tlg0012.001.wacl1:1.1"
+
+    def test_set_version_empty_string(self):
+        """Test set_version with an empty string."""
+        urn = CtsUrn(
+            urn_type="cts",
+            namespace="greekLit",
+            text_group="tlg0012",
+            work="001"
+        )
+        result = urn.set_version("")
+        assert result.version == ""
+
+
+class TestCtsUrnDropExemplar:
+    """Tests for the drop_exemplar method."""
+
+    def test_drop_exemplar_with_exemplar_present(self):
+        """Test drop_exemplar removes an exemplar component."""
+        urn = CtsUrn(
+            urn_type="cts",
+            namespace="greekLit",
+            text_group="tlg0012",
+            work="001",
+            version="wacl1",
+            exemplar="ex1"
+        )
+        result = urn.drop_exemplar()
+        assert result.exemplar is None
+        assert result.version == "wacl1"
+
+    def test_drop_exemplar_when_none(self):
+        """Test drop_exemplar when exemplar is already None."""
+        urn = CtsUrn(
+            urn_type="cts",
+            namespace="greekLit",
+            text_group="tlg0012",
+            work="001",
+            version="wacl1"
+        )
+        result = urn.drop_exemplar()
+        assert result.exemplar is None
+        assert result.version == "wacl1"
+
+    def test_drop_exemplar_preserves_version(self):
+        """Test drop_exemplar preserves version component."""
+        urn = CtsUrn(
+            urn_type="cts",
+            namespace="greekLit",
+            text_group="tlg0012",
+            work="001",
+            version="wacl1",
+            exemplar="ex1"
+        )
+        result = urn.drop_exemplar()
+        assert result.exemplar is None
+        assert result.version == "wacl1"
+
+    def test_drop_exemplar_preserves_passage(self):
+        """Test drop_exemplar preserves passage component."""
+        urn = CtsUrn(
+            urn_type="cts",
+            namespace="greekLit",
+            text_group="tlg0012",
+            work="001",
+            version="wacl1",
+            exemplar="ex1",
+            passage="1.1"
+        )
+        result = urn.drop_exemplar()
+        assert result.exemplar is None
+        assert result.passage == "1.1"
+
+    def test_drop_exemplar_preserves_all_other_components(self):
+        """Test drop_exemplar preserves all non-exemplar components."""
+        urn = CtsUrn(
+            urn_type="cts",
+            namespace="greekLit",
+            text_group="tlg0012",
+            work="001",
+            version="wacl1",
+            exemplar="ex1",
+            passage="1.1"
+        )
+        result = urn.drop_exemplar()
+        assert result.exemplar is None
+        assert result.urn_type == "cts"
+        assert result.namespace == "greekLit"
+        assert result.text_group == "tlg0012"
+        assert result.work == "001"
+        assert result.version == "wacl1"
+        assert result.passage == "1.1"
+
+    def test_drop_exemplar_creates_new_instance(self):
+        """Test drop_exemplar returns a new CtsUrn instance."""
+        urn = CtsUrn(
+            urn_type="cts",
+            namespace="greekLit",
+            text_group="tlg0012",
+            work="001",
+            version="wacl1",
+            exemplar="ex1"
+        )
+        result = urn.drop_exemplar()
+        assert result is not urn
+        assert urn.exemplar == "ex1"  # Original unchanged
+
+    def test_drop_exemplar_serialization(self):
+        """Test that drop_exemplar result can be serialized correctly."""
+        urn = CtsUrn(
+            urn_type="cts",
+            namespace="greekLit",
+            text_group="tlg0012",
+            work="001",
+            version="wacl1",
+            exemplar="ex1",
+            passage="1.1"
+        )
+        result = urn.drop_exemplar()
+        assert str(result) == "urn:cts:greekLit:tlg0012.001.wacl1:1.1"
+
+
+class TestCtsUrnSetExemplar:
+    """Tests for the set_exemplar method."""
+
+    def test_set_exemplar_from_none(self):
+        """Test set_exemplar adds an exemplar when exemplar is None."""
+        urn = CtsUrn(
+            urn_type="cts",
+            namespace="greekLit",
+            text_group="tlg0012",
+            work="001",
+            version="wacl1"
+        )
+        result = urn.set_exemplar("ex1")
+        assert result.exemplar == "ex1"
+        assert result.version == "wacl1"
+
+    def test_set_exemplar_replaces_existing(self):
+        """Test set_exemplar replaces an existing exemplar."""
+        urn = CtsUrn(
+            urn_type="cts",
+            namespace="greekLit",
+            text_group="tlg0012",
+            work="001",
+            version="wacl1",
+            exemplar="ex1"
+        )
+        result = urn.set_exemplar("ex2")
+        assert result.exemplar == "ex2"
+        assert result.version == "wacl1"
+
+    def test_set_exemplar_preserves_version(self):
+        """Test set_exemplar preserves version component."""
+        urn = CtsUrn(
+            urn_type="cts",
+            namespace="greekLit",
+            text_group="tlg0012",
+            work="001",
+            version="wacl1"
+        )
+        result = urn.set_exemplar("ex1")
+        assert result.exemplar == "ex1"
+        assert result.version == "wacl1"
+
+    def test_set_exemplar_preserves_passage(self):
+        """Test set_exemplar preserves passage component."""
+        urn = CtsUrn(
+            urn_type="cts",
+            namespace="greekLit",
+            text_group="tlg0012",
+            work="001",
+            version="wacl1",
+            passage="1.1"
+        )
+        result = urn.set_exemplar("ex1")
+        assert result.exemplar == "ex1"
+        assert result.passage == "1.1"
+
+    def test_set_exemplar_preserves_all_other_components(self):
+        """Test set_exemplar preserves all non-exemplar components."""
+        urn = CtsUrn(
+            urn_type="cts",
+            namespace="greekLit",
+            text_group="tlg0012",
+            work="001",
+            version="wacl1",
+            exemplar="old",
+            passage="1.1"
+        )
+        result = urn.set_exemplar("new")
+        assert result.exemplar == "new"
+        assert result.urn_type == "cts"
+        assert result.namespace == "greekLit"
+        assert result.text_group == "tlg0012"
+        assert result.work == "001"
+        assert result.version == "wacl1"
+        assert result.passage == "1.1"
+
+    def test_set_exemplar_creates_new_instance(self):
+        """Test set_exemplar returns a new CtsUrn instance."""
+        urn = CtsUrn(
+            urn_type="cts",
+            namespace="greekLit",
+            text_group="tlg0012",
+            work="001",
+            version="wacl1",
+            exemplar="ex1"
+        )
+        result = urn.set_exemplar("ex2")
+        assert result is not urn
+        assert urn.exemplar == "ex1"  # Original unchanged
+
+    def test_set_exemplar_serialization(self):
+        """Test that set_exemplar result can be serialized correctly."""
+        urn = CtsUrn(
+            urn_type="cts",
+            namespace="greekLit",
+            text_group="tlg0012",
+            work="001",
+            version="wacl1",
+            passage="1.1"
+        )
+        result = urn.set_exemplar("ex1")
+        assert str(result) == "urn:cts:greekLit:tlg0012.001.wacl1.ex1:1.1"
+
+    def test_set_exemplar_empty_string(self):
+        """Test set_exemplar with an empty string."""
+        urn = CtsUrn(
+            urn_type="cts",
+            namespace="greekLit",
+            text_group="tlg0012",
+            work="001",
+            version="wacl1"
+        )
+        result = urn.set_exemplar("")
+        assert result.exemplar == ""
