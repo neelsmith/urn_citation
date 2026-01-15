@@ -204,8 +204,8 @@ class CtsUrn(Urn):
 
 
     # rewrite this using a more elegant `getattr` approach, and also add a docstring
-    def work_similar(self, other: "CtsUrn") -> bool:
-        """Check if the work hierarchy is similar to another CtsUrn.
+    def work_contains(self, other: "CtsUrn") -> bool:
+        """Check if the work hierarchy contains another CtsUrn.
         
         Returns True if all non-None values of text_group, work, version, and exemplar
         in this CtsUrn equal the corresponding values in the other CtsUrn.
@@ -239,8 +239,8 @@ class CtsUrn(Urn):
         """
         return self.passage == other.passage
 
-    def passage_similar(self, other: "CtsUrn") -> bool:
-        """Check if the passage component is similar to another CtsUrn.
+    def passage_contains(self, other: "CtsUrn") -> bool:
+        """Check if the passage component contains another CtsUrn.
         
         Returns True if:
         - The passages are exactly equal, OR
@@ -271,18 +271,18 @@ class CtsUrn(Urn):
         
         return False
 
-    def urn_similar(self, other: "CtsUrn") -> bool:
-        """Check if this CtsUrn is similar to another CtsUrn.
+    def contains(self, other: "CtsUrn") -> bool:
+        """Check if this CtsUrn contains another CtsUrn.
         
-        Returns True if both the work hierarchy and passage are similar.
+        Returns True if both the work hierarchy and passage contain the other.
         
         Args:
             other (CtsUrn): The CtsUrn to compare with.
         
         Returns:
-            bool: True if both work_similar and passage_similar are True, False otherwise.
+            bool: True if both work_contains and passage_contains are True, False otherwise.
         """
-        return self.work_similar(other) and self.passage_similar(other)
+        return self.work_contains(other) and self.passage_contains(other)
 
         
 

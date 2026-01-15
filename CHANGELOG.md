@@ -4,6 +4,28 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 0.3.0 - 2026-01-15
+
+Breaking changes to the `CtsUrn` class.
+
+### Added
+
+- `passage_contains` method to check if one passage is contained within another. Replaces the previous `passage_similar` method.
+- `work_contains` method to check if one passage is contained within another. Replaces the previous `work_similar` method.
+- `contains` method to check if one passage is contained within another. Replaces the previous `urn_similar` method.
+
+### Changed
+
+- Updated unit tests to reflect the new containment methods and removal of the old similarity methods.
+
+
+### Removed
+
+- `passage_similar`, `work_similar`, and `urn_similar` methods from `CtsUrn` class as they have been replaced by the new containment methods.
+
+
+
+
 ## 0.2.0 - 2026-01-14
 
 Breaking changes to the `CtsUrn` class.

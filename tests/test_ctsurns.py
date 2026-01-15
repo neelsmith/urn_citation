@@ -369,11 +369,11 @@ class TestCtsUrnWorkEquals:
         assert urn1.work_equals(urn2) is True
 
 
-class TestCtsUrnWorkSimilar:
-    """Tests for the work_similar method."""
+class TestCtsUrnWorkContains:
+    """Tests for the work_contains method."""
 
-    def test_work_similar_identical_urns(self):
-        """Test work_similar returns True for identical work hierarchies."""
+    def test_work_contains_identical_urns(self):
+        """Test work_contains returns True for identical work hierarchies."""
         urn1 = CtsUrn(
             urn_type="cts",
             namespace="greekLit",
@@ -386,10 +386,10 @@ class TestCtsUrnWorkSimilar:
             text_group="tlg0012",
             work="001"
         )
-        assert urn1.work_similar(urn2) is True
+        assert urn1.work_contains(urn2) is True
 
-    def test_work_similar_with_none_fields(self):
-        """Test work_similar returns True when non-None fields match."""
+    def test_work_contains_with_none_fields(self):
+        """Test work_contains returns True when non-None fields match."""
         urn1 = CtsUrn(
             urn_type="cts",
             namespace="greekLit",
@@ -403,10 +403,10 @@ class TestCtsUrnWorkSimilar:
             work="001",
             version="wacl1"
         )
-        assert urn1.work_similar(urn2) is True
+        assert urn1.work_contains(urn2) is True
 
-    def test_work_similar_mismatch_non_none_field(self):
-        """Test work_similar returns False when non-None fields don't match."""
+    def test_work_contains_mismatch_non_none_field(self):
+        """Test work_contains returns False when non-None fields don't match."""
         urn1 = CtsUrn(
             urn_type="cts",
             namespace="greekLit",
@@ -419,10 +419,10 @@ class TestCtsUrnWorkSimilar:
             text_group="tlg0012",
             work="002"
         )
-        assert urn1.work_similar(urn2) is False
+        assert urn1.work_contains(urn2) is False
 
-    def test_work_similar_all_none_fields(self):
-        """Test work_similar returns True when all fields are None."""
+    def test_work_contains_all_none_fields(self):
+        """Test work_contains returns True when all fields are None."""
         urn1 = CtsUrn(
             urn_type="cts",
             namespace="greekLit",
@@ -434,7 +434,7 @@ class TestCtsUrnWorkSimilar:
             text_group="tlg0012",
             work="001"
         )
-        assert urn1.work_similar(urn2) is True
+        assert urn1.work_contains(urn2) is True
 
 
 class TestCtsUrnPassageEquals:
@@ -487,11 +487,11 @@ class TestCtsUrnPassageEquals:
         assert urn1.passage_equals(urn2) is True
 
 
-class TestCtsUrnPassageSimilar:
-    """Tests for the passage_similar method."""
+class TestCtsUrnPassageContains:
+    """Tests for the passage_contains method."""
 
-    def test_passage_similar_identical(self):
-        """Test passage_similar returns True for identical passages."""
+    def test_passage_contains_identical(self):
+        """Test passage_contains returns True for identical passages."""
         urn1 = CtsUrn(
             urn_type="cts",
             namespace="greekLit",
@@ -504,10 +504,10 @@ class TestCtsUrnPassageSimilar:
             text_group="tlg0012",
             passage="1.1"
         )
-        assert urn1.passage_similar(urn2) is True
+        assert urn1.passage_contains(urn2) is True
 
-    def test_passage_similar_refinement(self):
-        """Test passage_similar returns True for refinement passages."""
+    def test_passage_contains_refinement(self):
+        """Test passage_contains returns True for refinement passages."""
         urn1 = CtsUrn(
             urn_type="cts",
             namespace="greekLit",
@@ -520,10 +520,10 @@ class TestCtsUrnPassageSimilar:
             text_group="tlg0012",
             passage="1.11"
         )
-        assert urn1.passage_similar(urn2) is True
+        assert urn1.passage_contains(urn2) is True
 
-    def test_passage_similar_no_refinement_single_char(self):
-        """Test passage_similar returns False for single char without dot."""
+    def test_passage_contains_no_refinement_single_char(self):
+        """Test passage_contains returns False for single char without dot."""
         urn1 = CtsUrn(
             urn_type="cts",
             namespace="greekLit",
@@ -536,10 +536,10 @@ class TestCtsUrnPassageSimilar:
             text_group="tlg0012",
             passage="12"
         )
-        assert urn1.passage_similar(urn2) is False
+        assert urn1.passage_contains(urn2) is False
 
-    def test_passage_similar_completely_different(self):
-        """Test passage_similar returns False for different passages."""
+    def test_passage_contains_completely_different(self):
+        """Test passage_contains returns False for different passages."""
         urn1 = CtsUrn(
             urn_type="cts",
             namespace="greekLit",
@@ -552,10 +552,10 @@ class TestCtsUrnPassageSimilar:
             text_group="tlg0012",
             passage="2.2"
         )
-        assert urn1.passage_similar(urn2) is False
+        assert urn1.passage_contains(urn2) is False
 
-    def test_passage_similar_both_none(self):
-        """Test passage_similar returns True when both passages are None."""
+    def test_passage_contains_both_none(self):
+        """Test passage_contains returns True when both passages are None."""
         urn1 = CtsUrn(
             urn_type="cts",
             namespace="greekLit",
@@ -566,14 +566,14 @@ class TestCtsUrnPassageSimilar:
             namespace="greekLit",
             text_group="tlg0012"
         )
-        assert urn1.passage_similar(urn2) is True
+        assert urn1.passage_contains(urn2) is True
 
 
-class TestCtsUrnUrnSimilar:
-    """Tests for the urn_similar method."""
+class TestCtsUrnContains:
+    """Tests for the contains method."""
 
-    def test_urn_similar_identical_urns(self):
-        """Test urn_similar returns True for identical URNs."""
+    def test_contains_identical_urns(self):
+        """Test contains returns True for identical URNs."""
         urn1 = CtsUrn(
             urn_type="cts",
             namespace="greekLit",
@@ -588,10 +588,10 @@ class TestCtsUrnUrnSimilar:
             work="001",
             passage="1.1"
         )
-        assert urn1.urn_similar(urn2) is True
+        assert urn1.contains(urn2) is True
 
-    def test_urn_similar_similar_work_and_passage(self):
-        """Test urn_similar returns True for similar work and passage."""
+    def test_contains_similar_work_and_passage(self):
+        """Test contains returns True for similar work and passage."""
         urn1 = CtsUrn(
             urn_type="cts",
             namespace="greekLit",
@@ -606,10 +606,10 @@ class TestCtsUrnUrnSimilar:
             work="001",
             passage="1.11"
         )
-        assert urn1.urn_similar(urn2) is True
+        assert urn1.contains(urn2) is True
 
-    def test_urn_similar_different_work(self):
-        """Test urn_similar returns False if work is different."""
+    def test_contains_different_work(self):
+        """Test contains returns False if work is different."""
         urn1 = CtsUrn(
             urn_type="cts",
             namespace="greekLit",
@@ -624,10 +624,10 @@ class TestCtsUrnUrnSimilar:
             work="002",
             passage="1.1"
         )
-        assert urn1.urn_similar(urn2) is False
+        assert urn1.contains(urn2) is False
 
-    def test_urn_similar_different_passage(self):
-        """Test urn_similar returns False if passage is different."""
+    def test_contains_different_passage(self):
+        """Test contains returns False if passage is different."""
         urn1 = CtsUrn(
             urn_type="cts",
             namespace="greekLit",
@@ -642,7 +642,7 @@ class TestCtsUrnUrnSimilar:
             work="001",
             passage="2.1"
         )
-        assert urn1.urn_similar(urn2) is False
+        assert urn1.contains(urn2) is False
 
 
 class TestCtsUrnRoundTrip:
