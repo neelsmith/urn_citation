@@ -47,6 +47,76 @@ class TestCtsUrnCreation:
             CtsUrn(urn_type="cts", namespace="greekLit")
         assert "text_group" in str(exc_info.value)
 
+    def test_ctsurn_version_requires_work(self):
+        """Test that version cannot be set when work is None."""
+        with pytest.raises(ValidationError) as exc_info:
+            CtsUrn(
+                urn_type="cts",
+                namespace="greekLit",
+                text_group="tlg0012",
+                version="wacl1"
+            )
+        assert "version cannot be set when work is None" in str(exc_info.value)
+
+    def test_ctsurn_exemplar_requires_work(self):
+        """Test that exemplar cannot be set when work is None."""
+        with pytest.raises(ValidationError) as exc_info:
+            CtsUrn(
+                urn_type="cts",
+                namespace="greekLit",
+                text_group="tlg0012",
+                exemplar="ex1"
+            )
+        assert "exemplar cannot be set when work is None" in str(exc_info.value)
+
+    def test_ctsurn_exemplar_requires_version(self):
+        """Test that exemplar cannot be set when version is None."""
+        with pytest.raises(ValidationError) as exc_info:
+            CtsUrn(
+                urn_type="cts",
+                namespace="greekLit",
+                text_group="tlg0012",
+                work="001",
+                exemplar="ex1"
+            )
+        assert "exemplar cannot be set when version is None" in str(exc_info.value)
+
+    def test_ctsurn_with_work_only(self):
+        """Test creating a CtsUrn with text_group and work only."""
+        urn = CtsUrn(
+            urn_type="cts",
+            namespace="greekLit",
+            text_group="tlg0012",
+            work="001"
+        )
+        assert urn.work == "001"
+        assert urn.version is None
+        assert urn.exemplar is None
+
+    def test_ctsurn_with_work_and_version(self):
+        """Test creating a CtsUrn with text_group, work, and version."""
+        urn = CtsUrn(
+            urn_type="cts",
+            namespace="greekLit",
+            text_group="tlg0012",
+            work="001",
+            version="wacl1"
+        )
+        assert urn.work == "001"
+        assert urn.version == "wacl1"
+        assert urn.exemplar is None
+
+    def test_ctsurn_passage_independent_of_hierarchy(self):
+        """Test that passage can be set regardless of work hierarchy."""
+        urn = CtsUrn(
+            urn_type="cts",
+            namespace="greekLit",
+            text_group="tlg0012",
+            passage="1.1"
+        )
+        assert urn.work is None
+        assert urn.passage == "1.1"
+
 
 class TestCtsUrnToString:
     """Tests for the __str__ method."""
@@ -903,8 +973,8 @@ class TestCtsUrnDropVersion:
         assert result.version is None
         assert result.work == "001"
 
-    def test_drop_version_preserves_exemplar(self):
-        """Test drop_version preserves exemplar component."""
+    def test_drop_version_also_drops_exemplar(self):
+        """Test drop_version also removes exemplar component."""
         urn = CtsUrn(
             urn_type="cts",
             namespace="greekLit",
@@ -915,7 +985,7 @@ class TestCtsUrnDropVersion:
         )
         result = urn.drop_version()
         assert result.version is None
-        assert result.exemplar == "ex1"
+        assert result.exemplar is None  # Exemplar must be dropped too
 
     def test_drop_version_preserves_passage(self):
         """Test drop_version preserves passage component."""
@@ -932,7 +1002,7 @@ class TestCtsUrnDropVersion:
         assert result.passage == "1.1"
 
     def test_drop_version_preserves_all_other_components(self):
-        """Test drop_version preserves all non-version components."""
+        """Test drop_version preserves all non-version/exemplar components."""
         urn = CtsUrn(
             urn_type="cts",
             namespace="greekLit",
@@ -944,11 +1014,11 @@ class TestCtsUrnDropVersion:
         )
         result = urn.drop_version()
         assert result.version is None
+        assert result.exemplar is None  # Also dropped with version
         assert result.urn_type == "cts"
         assert result.namespace == "greekLit"
         assert result.text_group == "tlg0012"
         assert result.work == "001"
-        assert result.exemplar == "ex1"
         assert result.passage == "1.1"
 
     def test_drop_version_creates_new_instance(self):
@@ -1013,6 +1083,7 @@ class TestCtsUrnSetVersion:
             namespace="greekLit",
             text_group="tlg0012",
             work="001",
+            version="old",
             exemplar="ex1"
         )
         result = urn.set_version("wacl1")
@@ -1087,6 +1158,17 @@ class TestCtsUrnSetVersion:
         )
         result = urn.set_version("")
         assert result.version == ""
+
+    def test_set_version_fails_without_work(self):
+        """Test set_version raises error when work is None."""
+        urn = CtsUrn(
+            urn_type="cts",
+            namespace="greekLit",
+            text_group="tlg0012"
+        )
+        with pytest.raises(ValidationError) as exc_info:
+            urn.set_version("wacl1")
+        assert "version cannot be set when work is None" in str(exc_info.value)
 
 
 class TestCtsUrnDropExemplar:
@@ -1312,3 +1394,26 @@ class TestCtsUrnSetExemplar:
         )
         result = urn.set_exemplar("")
         assert result.exemplar == ""
+
+    def test_set_exemplar_fails_without_work(self):
+        """Test set_exemplar raises error when work is None."""
+        urn = CtsUrn(
+            urn_type="cts",
+            namespace="greekLit",
+            text_group="tlg0012"
+        )
+        with pytest.raises(ValidationError) as exc_info:
+            urn.set_exemplar("ex1")
+        assert "exemplar cannot be set when work is None" in str(exc_info.value)
+
+    def test_set_exemplar_fails_without_version(self):
+        """Test set_exemplar raises error when version is None."""
+        urn = CtsUrn(
+            urn_type="cts",
+            namespace="greekLit",
+            text_group="tlg0012",
+            work="001"
+        )
+        with pytest.raises(ValidationError) as exc_info:
+            urn.set_exemplar("ex1")
+        assert "exemplar cannot be set when version is None" in str(exc_info.value)

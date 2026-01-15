@@ -1,4 +1,4 @@
-from pydantic import BaseModel #, Field
+from pydantic import BaseModel, model_validator
 
 class Urn(BaseModel):
     """Superclass for URN types.
@@ -30,6 +30,29 @@ class CtsUrn(Urn):
     version: str | None = None
     exemplar: str | None = None
     passage: str | None = None
+
+    @model_validator(mode='after')
+    def validate_work_hierarchy(self):
+        """Validate the work hierarchy structure.
+        
+        Ensures that:
+        - version cannot be set if work is None
+        - exemplar cannot be set if version or work is None
+        
+        Raises:
+            ValueError: If the hierarchy constraints are violated.
+        """
+        if self.version is not None and self.work is None:
+            raise ValueError("version cannot be set when work is None")
+        
+        # Check work before version for exemplar (check hierarchy from root to leaf)
+        if self.exemplar is not None and self.work is None:
+            raise ValueError("exemplar cannot be set when work is None")
+        
+        if self.exemplar is not None and self.version is None:
+            raise ValueError("exemplar cannot be set when version is None")
+        
+        return self
 
     @classmethod
     def from_string(cls, raw_string):
@@ -330,7 +353,8 @@ class CtsUrn(Urn):
         """Create a new CtsUrn without the version component.
         
         Returns a new CtsUrn instance with the same work hierarchy but
-        with the version set to None.
+        with the version set to None. Note: exemplar will also be set to None
+        since exemplar cannot exist without a version.
         
         Returns:
             CtsUrn: A new CtsUrn instance without the version component.
@@ -341,7 +365,7 @@ class CtsUrn(Urn):
             text_group=self.text_group,
             work=self.work,
             version=None,
-            exemplar=self.exemplar,
+            exemplar=None,  # Must also drop exemplar since it requires version
             passage=self.passage
         )
     
