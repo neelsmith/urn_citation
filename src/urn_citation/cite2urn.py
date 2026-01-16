@@ -71,3 +71,172 @@ class Cite2Urn(Urn):
             version=version,
             object_id=object_id,
         )
+
+    def __str__(self) -> str:
+        """Serialize the Cite2Urn to its canonical string form."""
+        collection_part = self.collection
+        if self.version is not None:
+            collection_part = f"{collection_part}.{self.version}"
+
+        object_part = self.object_id or ""
+
+        return f"urn:{self.urn_type}:{self.namespace}:{collection_part}:{object_part}"
+
+    def is_range(self) -> bool:
+        """Return True when the object component encodes a range (single hyphen)."""
+        if self.object_id is None:
+            return False
+
+        range_parts = self.object_id.split("-")
+        return len(range_parts) == 2
+
+    def range_begin(self) -> str | None:
+        """Return the first identifier when the object component is a range."""
+        if not self.is_range():
+            return None
+        return self.object_id.split("-")[0]
+
+    def range_end(self) -> str | None:
+        """Return the second identifier when the object component is a range."""
+        if not self.is_range():
+            return None
+        return self.object_id.split("-")[1]
+
+    @classmethod
+    def valid_string(cls, raw_string: str) -> bool:
+        """Return True when the string can be parsed into a Cite2Urn."""
+        try:
+            if not raw_string.startswith("urn:cite2:"):
+                return False
+
+            parts = raw_string.split(":")
+            if len(parts) != 5:
+                return False
+
+            header, urn_type, namespace, collection_info, object_info = parts
+
+            if header != "urn" or urn_type != "cite2":
+                return False
+            if not namespace:
+                return False
+            if not collection_info or not object_info:
+                return False
+
+            # Collection rules: at most one period, not ending with a period, non-empty segments
+            if collection_info.endswith("."):
+                return False
+            collection_parts = collection_info.split(".")
+            if len(collection_parts) > 2:
+                return False
+            if any(part == "" for part in collection_parts):
+                return False
+
+            # Object rules: at most one hyphen, not ending with hyphen, non-empty segments
+            if object_info.endswith("-"):
+                return False
+            object_parts = object_info.split("-")
+            if len(object_parts) > 2:
+                return False
+            if any(part == "" for part in object_parts):
+                return False
+
+            return True
+        except Exception:
+            return False
+    def collection_equals(self, other: "Cite2Urn") -> bool:
+        """Check if the collection hierarchy equals another Cite2Urn.
+        
+        Compares the namespace, collection, and version fields.
+        
+        Args:
+            other (Cite2Urn): The Cite2Urn to compare with.
+        
+        Returns:
+            bool: True if all collection hierarchy fields are equal, False otherwise.
+        """
+        return (
+            self.namespace == other.namespace
+            and self.collection == other.collection
+            and self.version == other.version
+        )
+
+    def collection_contains(self, other: "Cite2Urn") -> bool:
+        """Check if the collection hierarchy contains another Cite2Urn.
+        
+        Returns True if all non-None values of namespace, collection, and version
+        in this Cite2Urn equal the corresponding values in the other Cite2Urn.
+        
+        Args:
+            other (Cite2Urn): The Cite2Urn to compare with.
+        
+        Returns:
+            bool: True if all non-None collection hierarchy fields match, False otherwise.
+        """
+        if self.namespace is not None and self.namespace != other.namespace:
+            return False
+        if self.collection is not None and self.collection != other.collection:
+            return False
+        if self.version is not None and self.version != other.version:
+            return False
+        return True
+
+    def object_equals(self, other: "Cite2Urn") -> bool:
+        """Check if the object identifier equals another Cite2Urn.
+        
+        Compares the object_id field of this Cite2Urn with the object_id field of another.
+        
+        Args:
+            other (Cite2Urn): The Cite2Urn to compare with.
+        
+        Returns:
+            bool: True if the object_id fields are equal, False otherwise.
+        """
+        return self.object_id == other.object_id
+
+    def contains(self, other: Cite2Urn) -> bool:
+        """Check if this Cite2Urn contains another Cite2Urn.
+        
+        Returns True if the collection hierarchy contains the other's collection hierarchy
+        AND the object identifiers are exactly equal.
+        
+        Args:
+            other (Cite2Urn): The Cite2Urn to compare with.
+        
+        Returns:
+            bool: True if collection_contains and object_equals are both True, False otherwise.
+        """
+        return self.collection_contains(other) and self.object_equals(other)
+
+    def drop_version(self) -> "Cite2Urn":
+        """Create a new Cite2Urn without the version component.
+        
+        Returns a new Cite2Urn instance with the same collection and object
+        but with the version set to None.
+        
+        Returns:
+            Cite2Urn: A new Cite2Urn instance without the version component.
+        """
+        return Cite2Urn(
+            urn_type=self.urn_type,
+            namespace=self.namespace,
+            collection=self.collection,
+            version=None,
+            object_id=self.object_id,
+        )
+
+    def drop_objectid(self) -> "Cite2Urn":
+        """Create a new Cite2Urn without the object_id component.
+        
+        Returns a new Cite2Urn instance with the same collection hierarchy
+        but with the object_id set to None.
+        
+        Returns:
+            Cite2Urn: A new Cite2Urn instance without the object_id component.
+        """
+        return Cite2Urn(
+            urn_type=self.urn_type,
+            namespace=self.namespace,
+            collection=self.collection,
+            version=self.version,
+            object_id=None,
+        )
