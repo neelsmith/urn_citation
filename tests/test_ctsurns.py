@@ -638,6 +638,42 @@ class TestCtsUrnPassageContains:
         )
         assert urn1.passage_contains(urn2) is True
 
+    def test_passage_contains_raises_on_self_range(self):
+        """Test passage_contains raises ValueError when self is a range."""
+        urn1 = CtsUrn(
+            urn_type="cts",
+            namespace="greekLit",
+            text_group="tlg0012",
+            passage="1.1-1.5"
+        )
+        urn2 = CtsUrn(
+            urn_type="cts",
+            namespace="greekLit",
+            text_group="tlg0012",
+            passage="1.1"
+        )
+        with pytest.raises(ValueError) as exc_info:
+            urn1.passage_contains(urn2)
+        assert "range passage" in str(exc_info.value)
+
+    def test_passage_contains_raises_on_other_range(self):
+        """Test passage_contains raises ValueError when other is a range."""
+        urn1 = CtsUrn(
+            urn_type="cts",
+            namespace="greekLit",
+            text_group="tlg0012",
+            passage="1.1"
+        )
+        urn2 = CtsUrn(
+            urn_type="cts",
+            namespace="greekLit",
+            text_group="tlg0012",
+            passage="1.1-1.5"
+        )
+        with pytest.raises(ValueError) as exc_info:
+            urn1.passage_contains(urn2)
+        assert "range passage" in str(exc_info.value)
+
 
 class TestCtsUrnContains:
     """Tests for the contains method."""
