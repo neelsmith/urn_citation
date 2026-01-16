@@ -1,20 +1,10 @@
-from pydantic import BaseModel, model_validator
-
-class Urn(BaseModel):
-    """Superclass for URN types.
-
-    All URNs are required to have a type identifier.
-
-    Attributes:
-        urn_type (str): Required identifier for URN type.
-
-    """    
-    urn_type: str
+from pydantic import model_validator
+from .urn import Urn
     
 class CtsUrn(Urn):
     """A CTS URN identifying a passage of a canonically citable text.
 
-    Canonical Text Service (CTS) URNs model passages of texts with two overlapping hierarchies: a work hierarchy, and a passage hierarchy. Values in the work hierarchy belong to a specified namespace. The work hierarchy is required to identify at least a text group; optionally, it may specify a work, a version (edition or translation) of the work, and exemplar (specific copy of the version). The passage hierarchy may be empty, in which case the URN refers to the entire contents of the work identified in the work hierarchy. Otherwise, the passage hierarchy identifies a specific passage of the work, at any depth of the citation hierarchy appropriate for the work    (e.g., book, chapter, verse, line, token.) The passage hierarchy may identify either a single passage or a range of passages.
+    Canonical Text Service (CTS) URNs model passages of texts with two overlapping hierarchies: a work hierarchy, and a passage hierarchy. Values in the work hierarchy belong to a specified namespace. The work hierarchy is required to identify at least a text group; optionally, it may specify a work, a version (edition or translation) of the work, and exemplar (specific copy of the version). The passage hierarchy may be empty, in which case the URN refers to the entire contents of the work identified in the work hierarchy. Otherwise, the passage hierarchy identifies a specific passage of the work, at any depth of the citation hierarchy appropriate for the work (e.g., book, chapter, verse, line, token.) The passage hierarchy may identify either a single passage or a range of passages.
 
     Attributes:
         namespace (str): Required identifier for the namespace of the text (e.g., "greekLit" or "latinLit") where values for the work hierarchy are defined.

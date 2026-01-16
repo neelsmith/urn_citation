@@ -6,6 +6,8 @@ except PackageNotFoundError:
     # Package is not installed (e.g., running from a local script)
     __version__ = "unknown"
 
-from .urns import Urn, CtsUrn
+from .urn import Urn
+from .ctsurn import CtsUrn
+from .cite2urn import Cite2Urn
 
-__all__ = ["Urn", "CtsUrn"]
+__all__ = ["Urn", "CtsUrn", "Cite2Urn"]
