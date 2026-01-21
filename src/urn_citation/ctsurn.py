@@ -488,6 +488,50 @@ class CtsUrn(Urn):
         )
 
 
+    def drop_subreference(self) -> CtsUrn:
+        """Create a new CtsUrn with all subreferences removed.
+        
+        Returns a new CtsUrn instance with subreferences (text after @) removed
+        from the passage component. Works on both single passages and ranges.
+        If there are no subreferences, returns a new instance with the same passage.
+        
+        Returns:
+            CtsUrn: A new CtsUrn instance without subreferences in the passage.
+        """
+        if self.passage is None or "@" not in self.passage:
+            # No subreference to drop, return copy with same passage
+            return CtsUrn(
+                urn_type=self.urn_type,
+                namespace=self.namespace,
+                text_group=self.text_group,
+                work=self.work,
+                version=self.version,
+                exemplar=self.exemplar,
+                passage=self.passage
+            )
+        
+        # Remove subreferences from passage
+        range_parts = self.passage.split("-")
+        cleaned_parts = []
+        for part in range_parts:
+            if "@" in part:
+                # Keep only the part before @
+                cleaned_parts.append(part.split("@")[0])
+            else:
+                cleaned_parts.append(part)
+        
+        new_passage = "-".join(cleaned_parts)
+        
+        return CtsUrn(
+            urn_type=self.urn_type,
+            namespace=self.namespace,
+            text_group=self.text_group,
+            work=self.work,
+            version=self.version,
+            exemplar=self.exemplar,
+            passage=new_passage
+        )
+
     def drop_version(self) -> CtsUrn:
         """Create a new CtsUrn without the version component.
         

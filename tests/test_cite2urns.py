@@ -383,6 +383,135 @@ class TestCite2UrnDropMethods:
         assert dropped.object_id is None
         assert dropped.collection == "data"
 
+    def test_drop_subreference_single_object_with_subreference(self):
+        """Test drop_subreference removes subreference from single object."""
+        urn = Cite2Urn(
+            urn_type="cite2",
+            namespace="hmt",
+            collection="data",
+            object_id="obj1@region1"
+        )
+        result = urn.drop_subreference()
+        assert result.object_id == "obj1"
+        assert result.namespace == "hmt"
+        assert result.collection == "data"
+
+    def test_drop_subreference_single_object_without_subreference(self):
+        """Test drop_subreference returns same object_id when no subreference."""
+        urn = Cite2Urn(
+            urn_type="cite2",
+            namespace="hmt",
+            collection="data",
+            object_id="obj1"
+        )
+        result = urn.drop_subreference()
+        assert result.object_id == "obj1"
+
+    def test_drop_subreference_range_with_subreference_on_both_parts(self):
+        """Test drop_subreference removes subreferences from both range parts."""
+        urn = Cite2Urn(
+            urn_type="cite2",
+            namespace="hmt",
+            collection="data",
+            object_id="obj1@region1-obj2@region2"
+        )
+        result = urn.drop_subreference()
+        assert result.object_id == "obj1-obj2"
+
+    def test_drop_subreference_range_with_subreference_on_first_part(self):
+        """Test drop_subreference removes subreference from first range part only."""
+        urn = Cite2Urn(
+            urn_type="cite2",
+            namespace="hmt",
+            collection="data",
+            object_id="obj1@region1-obj2"
+        )
+        result = urn.drop_subreference()
+        assert result.object_id == "obj1-obj2"
+
+    def test_drop_subreference_range_with_subreference_on_second_part(self):
+        """Test drop_subreference removes subreference from second range part only."""
+        urn = Cite2Urn(
+            urn_type="cite2",
+            namespace="hmt",
+            collection="data",
+            object_id="obj1-obj2@region2"
+        )
+        result = urn.drop_subreference()
+        assert result.object_id == "obj1-obj2"
+
+    def test_drop_subreference_range_without_subreference(self):
+        """Test drop_subreference returns same object_id for range without subreference."""
+        urn = Cite2Urn(
+            urn_type="cite2",
+            namespace="hmt",
+            collection="data",
+            object_id="obj1-obj2"
+        )
+        result = urn.drop_subreference()
+        assert result.object_id == "obj1-obj2"
+
+    def test_drop_subreference_with_none_object_id(self):
+        """Test drop_subreference when object_id is None."""
+        urn = Cite2Urn(
+            urn_type="cite2",
+            namespace="hmt",
+            collection="data"
+        )
+        result = urn.drop_subreference()
+        assert result.object_id is None
+
+    def test_drop_subreference_preserves_all_collection_hierarchy(self):
+        """Test drop_subreference preserves all collection hierarchy components."""
+        urn = Cite2Urn(
+            urn_type="cite2",
+            namespace="hmt",
+            collection="data",
+            version="v1",
+            object_id="obj1@region"
+        )
+        result = urn.drop_subreference()
+        assert result.object_id == "obj1"
+        assert result.urn_type == "cite2"
+        assert result.namespace == "hmt"
+        assert result.collection == "data"
+        assert result.version == "v1"
+
+    def test_drop_subreference_creates_new_instance(self):
+        """Test drop_subreference returns a new Cite2Urn instance."""
+        urn = Cite2Urn(
+            urn_type="cite2",
+            namespace="hmt",
+            collection="data",
+            object_id="obj1@region"
+        )
+        result = urn.drop_subreference()
+        assert result is not urn
+        assert urn.object_id == "obj1@region"  # Original unchanged
+
+    def test_drop_subreference_serialization(self):
+        """Test that drop_subreference result can be serialized correctly."""
+        urn = Cite2Urn(
+            urn_type="cite2",
+            namespace="hmt",
+            collection="data",
+            version="v1",
+            object_id="obj1@region1-obj2@region2"
+        )
+        result = urn.drop_subreference()
+        assert str(result) == "urn:cite2:hmt:data.v1:obj1-obj2"
+
+    def test_drop_subreference_with_complex_subreference(self):
+        """Test drop_subreference with complex subreference strings."""
+        urn = Cite2Urn(
+            urn_type="cite2",
+            namespace="hmt",
+            collection="data",
+            object_id="obj1@roi[1,2,3,4]-obj2@roi[5,6,7,8]"
+        )
+        result = urn.drop_subreference()
+        assert result.object_id == "obj1-obj2"
+
 class TestCite2UrnContains:
     def test_contains_identical_urns(self):
         urn1 = Cite2Urn(

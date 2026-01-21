@@ -1541,6 +1541,151 @@ class TestCtsUrnDropPassage:
         assert str(result) == "urn:cts:greekLit:tlg0012.001:"
 
 
+class TestCtsUrnDropSubreference:
+    """Tests for the drop_subreference method."""
+
+    def test_drop_subreference_single_passage_with_subreference(self):
+        """Test drop_subreference removes subreference from single passage."""
+        urn = CtsUrn(
+            urn_type="cts",
+            namespace="greekLit",
+            text_group="tlg0012",
+            work="001",
+            passage="1.1@μῆνιν"
+        )
+        result = urn.drop_subreference()
+        assert result.passage == "1.1"
+        assert result.text_group == "tlg0012"
+        assert result.work == "001"
+
+    def test_drop_subreference_single_passage_without_subreference(self):
+        """Test drop_subreference returns same passage when no subreference."""
+        urn = CtsUrn(
+            urn_type="cts",
+            namespace="greekLit",
+            text_group="tlg0012",
+            work="001",
+            passage="1.1"
+        )
+        result = urn.drop_subreference()
+        assert result.passage == "1.1"
+        assert result.text_group == "tlg0012"
+
+    def test_drop_subreference_range_with_subreference_on_both_parts(self):
+        """Test drop_subreference removes subreferences from both range parts."""
+        urn = CtsUrn(
+            urn_type="cts",
+            namespace="greekLit",
+            text_group="tlg0012",
+            work="001",
+            passage="1.1@μῆνιν-1.2@θεά"
+        )
+        result = urn.drop_subreference()
+        assert result.passage == "1.1-1.2"
+        assert result.text_group == "tlg0012"
+
+    def test_drop_subreference_range_with_subreference_on_first_part(self):
+        """Test drop_subreference removes subreference from first range part only."""
+        urn = CtsUrn(
+            urn_type="cts",
+            namespace="greekLit",
+            text_group="tlg0012",
+            work="001",
+            passage="1.1@μῆνιν-1.2"
+        )
+        result = urn.drop_subreference()
+        assert result.passage == "1.1-1.2"
+
+    def test_drop_subreference_range_with_subreference_on_second_part(self):
+        """Test drop_subreference removes subreference from second range part only."""
+        urn = CtsUrn(
+            urn_type="cts",
+            namespace="greekLit",
+            text_group="tlg0012",
+            work="001",
+            passage="1.1-1.2@θεά"
+        )
+        result = urn.drop_subreference()
+        assert result.passage == "1.1-1.2"
+
+    def test_drop_subreference_range_without_subreference(self):
+        """Test drop_subreference returns same passage for range without subreference."""
+        urn = CtsUrn(
+            urn_type="cts",
+            namespace="greekLit",
+            text_group="tlg0012",
+            passage="1.1-1.5"
+        )
+        result = urn.drop_subreference()
+        assert result.passage == "1.1-1.5"
+
+    def test_drop_subreference_with_none_passage(self):
+        """Test drop_subreference when passage is None."""
+        urn = CtsUrn(
+            urn_type="cts",
+            namespace="greekLit",
+            text_group="tlg0012"
+        )
+        result = urn.drop_subreference()
+        assert result.passage is None
+
+    def test_drop_subreference_preserves_all_work_hierarchy(self):
+        """Test drop_subreference preserves all work hierarchy components."""
+        urn = CtsUrn(
+            urn_type="cts",
+            namespace="greekLit",
+            text_group="tlg0012",
+            work="001",
+            version="wacl1",
+            exemplar="ex1",
+            passage="1.1@word"
+        )
+        result = urn.drop_subreference()
+        assert result.passage == "1.1"
+        assert result.urn_type == "cts"
+        assert result.namespace == "greekLit"
+        assert result.text_group == "tlg0012"
+        assert result.work == "001"
+        assert result.version == "wacl1"
+        assert result.exemplar == "ex1"
+
+    def test_drop_subreference_creates_new_instance(self):
+        """Test drop_subreference returns a new CtsUrn instance."""
+        urn = CtsUrn(
+            urn_type="cts",
+            namespace="greekLit",
+            text_group="tlg0012",
+            passage="1.1@word"
+        )
+        result = urn.drop_subreference()
+        assert result is not urn
+        assert urn.passage == "1.1@word"  # Original unchanged
+
+    def test_drop_subreference_serialization(self):
+        """Test that drop_subreference result can be serialized correctly."""
+        urn = CtsUrn(
+            urn_type="cts",
+            namespace="greekLit",
+            text_group="tlg0012",
+            work="001",
+            passage="1.1@word1-2.1@word2"
+        )
+        result = urn.drop_subreference()
+        assert str(result) == "urn:cts:greekLit:tlg0012.001:1.1-2.1"
+
+    def test_drop_subreference_with_complex_subreference(self):
+        """Test drop_subreference with complex subreference strings."""
+        urn = CtsUrn(
+            urn_type="cts",
+            namespace="greekLit",
+            text_group="tlg0012",
+            work="001",
+            passage="1.1@word[1,2,3]-1.2@word[4,5,6]"
+        )
+        result = urn.drop_subreference()
+        assert result.passage == "1.1-1.2"
+
+
 class TestCtsUrnSetPassage:
     """Tests for the set_passage method."""
 

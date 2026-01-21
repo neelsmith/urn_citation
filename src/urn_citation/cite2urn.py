@@ -390,3 +390,43 @@ class Cite2Urn(Urn):
             version=self.version,
             object_id=None,
         )
+
+    def drop_subreference(self) -> "Cite2Urn":
+        """Create a new Cite2Urn with all subreferences removed.
+        
+        Returns a new Cite2Urn instance with subreferences (text after @) removed
+        from the object_id component. Works on both single objects and ranges.
+        If there are no subreferences, returns a new instance with the same object_id.
+        
+        Returns:
+            Cite2Urn: A new Cite2Urn instance without subreferences in the object_id.
+        """
+        if self.object_id is None or "@" not in self.object_id:
+            # No subreference to drop, return copy with same object_id
+            return Cite2Urn(
+                urn_type=self.urn_type,
+                namespace=self.namespace,
+                collection=self.collection,
+                version=self.version,
+                object_id=self.object_id,
+            )
+        
+        # Remove subreferences from object_id
+        range_parts = self.object_id.split("-")
+        cleaned_parts = []
+        for part in range_parts:
+            if "@" in part:
+                # Keep only the part before @
+                cleaned_parts.append(part.split("@")[0])
+            else:
+                cleaned_parts.append(part)
+        
+        new_object_id = "-".join(cleaned_parts)
+        
+        return Cite2Urn(
+            urn_type=self.urn_type,
+            namespace=self.namespace,
+            collection=self.collection,
+            version=self.version,
+            object_id=new_object_id,
+        )
