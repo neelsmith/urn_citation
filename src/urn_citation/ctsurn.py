@@ -28,6 +28,7 @@ class CtsUrn(Urn):
         Ensures that:
         - version cannot be set if work is None
         - exemplar cannot be set if version or work is None
+        - passage component has at most one @ per range part
         
         Raises:
             ValueError: If the hierarchy constraints are violated.
@@ -42,6 +43,13 @@ class CtsUrn(Urn):
         if self.exemplar is not None and self.version is None:
             raise ValueError("exemplar cannot be set when version is None")
         
+        # Validate subreferences in passage component
+        if self.passage is not None:
+            range_parts = self.passage.split("-")
+            for part in range_parts:
+                if part.count("@") > 1:
+                    raise ValueError(f"Each passage component can have at most one @ delimiter for subreference, found {part.count('@')} in '{part}'")
+        
         return self
 
     @classmethod
@@ -55,6 +63,11 @@ class CtsUrn(Urn):
         rangeparts = passage_component.split("-")
         if len(rangeparts) > 2:
             raise ValueError(f"Passage component of CTS URN cannot have more than one hyphen to indicate a range, found {len(rangeparts)-1} hyphenated parts in {passage_component}.")
+        
+        # Validate subreferences (at most one @ per range part)
+        for part in rangeparts:
+            if part.count("@") > 1:
+                raise ValueError(f"Each passage component can have at most one @ delimiter for subreference, found {part.count('@')} in '{part}'")
         
         if ".." in work_component:
             raise ValueError(f"Work component of CTS URN cannot contain successive periods, found in {work_component}.")
@@ -124,6 +137,21 @@ class CtsUrn(Urn):
         
         range_parts = self.passage.split("-")
         return len(range_parts) == 2
+
+    def has_subreference(self) -> bool:
+        """Check if the passage component has a subreference.
+        
+        A passage has a subreference if it contains at least one @ character,
+        which may appear on either or both parts of a range reference, or on
+        a single reference.
+        
+        Returns:
+            bool: True if the passage contains a subreference (@ character), False otherwise.
+        """
+        if self.passage is None:
+            return False
+        
+        return "@" in self.passage
 
     def range_begin(self) -> str | None:
         """Get the beginning of a passage range.
