@@ -4,6 +4,14 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 0.7.2 - 2026-01-21
+
+### Fixes
+
+No changes to python code; only corrections to minor typos in documentation.
+
+For more details, see the [complete diff](https://github.com/neelsmith/urn_citation/compare/v0.7.1...v0.7.2).
+
 
 ## 0.7.1 - 2026-01-21
 
