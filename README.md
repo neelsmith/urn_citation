@@ -86,3 +86,8 @@ Where:
 ## License
 
 See the LICENSE file for details.
+
+
+## Documentation
+
+See [API documentation](https://neelsmith.github.io/urn_citation/) for more details on the classes and methods provided by this library.
