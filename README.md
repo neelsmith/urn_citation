@@ -6,6 +6,7 @@ A Python library for working with CITE architecture URNs for scholarly citation.
 
 `urn_citation` provides Pydantic-based models for representing and parsing Uniform Resource Names (URNs) defined for the CITE architecture. The current release supports Canonical Text Service (CTS) URNs, which are used to identify passages of canonically citable texts with hierarchical work and passage components.
 
+
 ## Features
 
 - **Pydantic Models**: Type-safe URN representations with validation
