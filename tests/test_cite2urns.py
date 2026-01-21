@@ -463,3 +463,599 @@ class TestCite2UrnContains:
         # Even though collection_contains would be True,
         # contains is False because objects are not equal
         assert urn1.contains(urn2) is False
+
+
+class TestCite2UrnHasSubreference:
+    """Tests for the has_subreference method."""
+
+    def test_has_subreference_single_object_with_subreference(self):
+        """Test has_subreference returns True for a single object with subreference."""
+        urn = Cite2Urn(
+            urn_type="cite2",
+            namespace="hmt",
+            collection="data",
+            object_id="obj1@region1"
+        )
+        assert urn.has_subreference() is True
+
+    def test_has_subreference_single_object_without_subreference(self):
+        """Test has_subreference returns False for a single object without subreference."""
+        urn = Cite2Urn(
+            urn_type="cite2",
+            namespace="hmt",
+            collection="data",
+            object_id="obj1"
+        )
+        assert urn.has_subreference() is False
+
+    def test_has_subreference_range_with_subreference_on_both_parts(self):
+        """Test has_subreference returns True when both range parts have subreferences."""
+        urn = Cite2Urn(
+            urn_type="cite2",
+            namespace="hmt",
+            collection="data",
+            object_id="obj1@region1-obj2@region2"
+        )
+        assert urn.has_subreference() is True
+
+    def test_has_subreference_range_with_subreference_on_first_part(self):
+        """Test has_subreference returns True when only first range part has subreference."""
+        urn = Cite2Urn(
+            urn_type="cite2",
+            namespace="hmt",
+            collection="data",
+            object_id="obj1@region1-obj2"
+        )
+        assert urn.has_subreference() is True
+
+    def test_has_subreference_range_with_subreference_on_second_part(self):
+        """Test has_subreference returns True when only second range part has subreference."""
+        urn = Cite2Urn(
+            urn_type="cite2",
+            namespace="hmt",
+            collection="data",
+            object_id="obj1-obj2@region2"
+        )
+        assert urn.has_subreference() is True
+
+    def test_has_subreference_range_without_subreference(self):
+        """Test has_subreference returns False for a range without any subreferences."""
+        urn = Cite2Urn(
+            urn_type="cite2",
+            namespace="hmt",
+            collection="data",
+            object_id="obj1-obj2"
+        )
+        assert urn.has_subreference() is False
+
+    def test_has_subreference_none_object(self):
+        """Test has_subreference returns False when object_id is None."""
+        urn = Cite2Urn(
+            urn_type="cite2",
+            namespace="hmt",
+            collection="data"
+        )
+        assert urn.has_subreference() is False
+
+
+class TestCite2UrnHasSubreference1:
+    """Tests for the has_subreference1 method."""
+
+    def test_has_subreference1_range_with_subreference_on_first_part(self):
+        """Test has_subreference1 returns True when first range part has subreference."""
+        urn = Cite2Urn(
+            urn_type="cite2",
+            namespace="hmt",
+            collection="data",
+            object_id="obj1@region1-obj2"
+        )
+        assert urn.has_subreference1() is True
+
+    def test_has_subreference1_range_without_subreference_on_first_part(self):
+        """Test has_subreference1 returns False when first range part lacks subreference."""
+        urn = Cite2Urn(
+            urn_type="cite2",
+            namespace="hmt",
+            collection="data",
+            object_id="obj1-obj2@region2"
+        )
+        assert urn.has_subreference1() is False
+
+    def test_has_subreference1_range_with_subreference_on_both_parts(self):
+        """Test has_subreference1 returns True when both range parts have subreferences."""
+        urn = Cite2Urn(
+            urn_type="cite2",
+            namespace="hmt",
+            collection="data",
+            object_id="obj1@region1-obj2@region2"
+        )
+        assert urn.has_subreference1() is True
+
+    def test_has_subreference1_range_without_any_subreference(self):
+        """Test has_subreference1 returns False when neither range part has subreference."""
+        urn = Cite2Urn(
+            urn_type="cite2",
+            namespace="hmt",
+            collection="data",
+            object_id="obj1-obj2"
+        )
+        assert urn.has_subreference1() is False
+
+    def test_has_subreference1_raises_error_on_single_object(self):
+        """Test has_subreference1 raises ValueError when URN is not a range."""
+        urn = Cite2Urn(
+            urn_type="cite2",
+            namespace="hmt",
+            collection="data",
+            object_id="obj1@region1"
+        )
+        with pytest.raises(ValueError) as exc_info:
+            urn.has_subreference1()
+        assert "has_subreference1 can only be called on range URNs" in str(exc_info.value)
+
+    def test_has_subreference1_raises_error_on_none_object(self):
+        """Test has_subreference1 raises ValueError when object_id is None."""
+        urn = Cite2Urn(
+            urn_type="cite2",
+            namespace="hmt",
+            collection="data"
+        )
+        with pytest.raises(ValueError) as exc_info:
+            urn.has_subreference1()
+        assert "has_subreference1 can only be called on range URNs" in str(exc_info.value)
+
+
+class TestCite2UrnHasSubreference2:
+    """Tests for the has_subreference2 method."""
+
+    def test_has_subreference2_range_with_subreference_on_second_part(self):
+        """Test has_subreference2 returns True when second range part has subreference."""
+        urn = Cite2Urn(
+            urn_type="cite2",
+            namespace="hmt",
+            collection="data",
+            object_id="obj1-obj2@region2"
+        )
+        assert urn.has_subreference2() is True
+
+    def test_has_subreference2_range_without_subreference_on_second_part(self):
+        """Test has_subreference2 returns False when second range part lacks subreference."""
+        urn = Cite2Urn(
+            urn_type="cite2",
+            namespace="hmt",
+            collection="data",
+            object_id="obj1@region1-obj2"
+        )
+        assert urn.has_subreference2() is False
+
+    def test_has_subreference2_range_with_subreference_on_both_parts(self):
+        """Test has_subreference2 returns True when both range parts have subreferences."""
+        urn = Cite2Urn(
+            urn_type="cite2",
+            namespace="hmt",
+            collection="data",
+            object_id="obj1@region1-obj2@region2"
+        )
+        assert urn.has_subreference2() is True
+
+    def test_has_subreference2_range_without_any_subreference(self):
+        """Test has_subreference2 returns False when neither range part has subreference."""
+        urn = Cite2Urn(
+            urn_type="cite2",
+            namespace="hmt",
+            collection="data",
+            object_id="obj1-obj2"
+        )
+        assert urn.has_subreference2() is False
+
+    def test_has_subreference2_raises_error_on_single_object(self):
+        """Test has_subreference2 raises ValueError when URN is not a range."""
+        urn = Cite2Urn(
+            urn_type="cite2",
+            namespace="hmt",
+            collection="data",
+            object_id="obj2@region2"
+        )
+        with pytest.raises(ValueError) as exc_info:
+            urn.has_subreference2()
+        assert "has_subreference2 can only be called on range URNs" in str(exc_info.value)
+
+    def test_has_subreference2_raises_error_on_none_object(self):
+        """Test has_subreference2 raises ValueError when object_id is None."""
+        urn = Cite2Urn(
+            urn_type="cite2",
+            namespace="hmt",
+            collection="data"
+        )
+        with pytest.raises(ValueError) as exc_info:
+            urn.has_subreference2()
+        assert "has_subreference2 can only be called on range URNs" in str(exc_info.value)
+
+
+class TestCite2UrnSubreference:
+    """Tests for the subreference method."""
+
+    def test_subreference_single_object_with_subreference(self):
+        """Test subreference returns the subreference part for a single object."""
+        urn = Cite2Urn(
+            urn_type="cite2",
+            namespace="hmt",
+            collection="data",
+            object_id="obj1@region1"
+        )
+        assert urn.subreference() == "region1"
+
+    def test_subreference_single_object_without_subreference(self):
+        """Test subreference returns None for a single object without subreference."""
+        urn = Cite2Urn(
+            urn_type="cite2",
+            namespace="hmt",
+            collection="data",
+            object_id="obj1"
+        )
+        assert urn.subreference() is None
+
+    def test_subreference_none_object(self):
+        """Test subreference returns None when object_id is None."""
+        urn = Cite2Urn(
+            urn_type="cite2",
+            namespace="hmt",
+            collection="data"
+        )
+        assert urn.subreference() is None
+
+    def test_subreference_raises_error_on_range(self):
+        """Test subreference raises ValueError when URN is a range."""
+        urn = Cite2Urn(
+            urn_type="cite2",
+            namespace="hmt",
+            collection="data",
+            object_id="obj1@region1-obj2@region2"
+        )
+        with pytest.raises(ValueError) as exc_info:
+            urn.subreference()
+        assert "subreference can only be called on non-range URNs" in str(exc_info.value)
+
+    def test_subreference_raises_error_on_range_without_subreference(self):
+        """Test subreference raises ValueError for a range without subreferences."""
+        urn = Cite2Urn(
+            urn_type="cite2",
+            namespace="hmt",
+            collection="data",
+            object_id="obj1-obj2"
+        )
+        with pytest.raises(ValueError) as exc_info:
+            urn.subreference()
+        assert "subreference can only be called on non-range URNs" in str(exc_info.value)
+
+    def test_subreference_with_complex_subreference(self):
+        """Test subreference with a complex subreference string."""
+        urn = Cite2Urn(
+            urn_type="cite2",
+            namespace="hmt",
+            collection="data",
+            object_id="obj1@roi[1,2,3,4]"
+        )
+        assert urn.subreference() == "roi[1,2,3,4]"
+
+
+class TestCite2UrnSubreference1:
+    """Tests for the subreference1 method."""
+
+    def test_subreference1_range_with_subreference_on_first_part(self):
+        """Test subreference1 returns the subreference part of the range begin."""
+        urn = Cite2Urn(
+            urn_type="cite2",
+            namespace="hmt",
+            collection="data",
+            object_id="obj1@region1-obj2"
+        )
+        assert urn.subreference1() == "region1"
+
+    def test_subreference1_range_without_subreference_on_first_part(self):
+        """Test subreference1 returns None when first range part lacks subreference."""
+        urn = Cite2Urn(
+            urn_type="cite2",
+            namespace="hmt",
+            collection="data",
+            object_id="obj1-obj2@region2"
+        )
+        assert urn.subreference1() is None
+
+    def test_subreference1_range_with_subreference_on_both_parts(self):
+        """Test subreference1 returns the first subreference when both parts have subreferences."""
+        urn = Cite2Urn(
+            urn_type="cite2",
+            namespace="hmt",
+            collection="data",
+            object_id="obj1@region1-obj2@region2"
+        )
+        assert urn.subreference1() == "region1"
+
+    def test_subreference1_range_without_any_subreference(self):
+        """Test subreference1 returns None when neither range part has subreference."""
+        urn = Cite2Urn(
+            urn_type="cite2",
+            namespace="hmt",
+            collection="data",
+            object_id="obj1-obj2"
+        )
+        assert urn.subreference1() is None
+
+    def test_subreference1_raises_error_on_single_object(self):
+        """Test subreference1 raises ValueError when URN is not a range."""
+        urn = Cite2Urn(
+            urn_type="cite2",
+            namespace="hmt",
+            collection="data",
+            object_id="obj1@region1"
+        )
+        with pytest.raises(ValueError) as exc_info:
+            urn.subreference1()
+        assert "subreference1 can only be called on range URNs" in str(exc_info.value)
+
+    def test_subreference1_raises_error_on_none_object(self):
+        """Test subreference1 raises ValueError when object_id is None."""
+        urn = Cite2Urn(
+            urn_type="cite2",
+            namespace="hmt",
+            collection="data"
+        )
+        with pytest.raises(ValueError) as exc_info:
+            urn.subreference1()
+        assert "subreference1 can only be called on range URNs" in str(exc_info.value)
+
+    def test_subreference1_with_complex_subreference(self):
+        """Test subreference1 with a complex subreference string."""
+        urn = Cite2Urn(
+            urn_type="cite2",
+            namespace="hmt",
+            collection="data",
+            object_id="obj1@roi[1,2,3,4]-obj2"
+        )
+        assert urn.subreference1() == "roi[1,2,3,4]"
+
+
+class TestCite2UrnSubreference2:
+    """Tests for the subreference2 method."""
+
+    def test_subreference2_range_with_subreference_on_second_part(self):
+        """Test subreference2 returns the subreference part of the range end."""
+        urn = Cite2Urn(
+            urn_type="cite2",
+            namespace="hmt",
+            collection="data",
+            object_id="obj1-obj2@region2"
+        )
+        assert urn.subreference2() == "region2"
+
+    def test_subreference2_range_without_subreference_on_second_part(self):
+        """Test subreference2 returns None when second range part lacks subreference."""
+        urn = Cite2Urn(
+            urn_type="cite2",
+            namespace="hmt",
+            collection="data",
+            object_id="obj1@region1-obj2"
+        )
+        assert urn.subreference2() is None
+
+    def test_subreference2_range_with_subreference_on_both_parts(self):
+        """Test subreference2 returns the second subreference when both parts have subreferences."""
+        urn = Cite2Urn(
+            urn_type="cite2",
+            namespace="hmt",
+            collection="data",
+            object_id="obj1@region1-obj2@region2"
+        )
+        assert urn.subreference2() == "region2"
+
+    def test_subreference2_range_without_any_subreference(self):
+        """Test subreference2 returns None when neither range part has subreference."""
+        urn = Cite2Urn(
+            urn_type="cite2",
+            namespace="hmt",
+            collection="data",
+            object_id="obj1-obj2"
+        )
+        assert urn.subreference2() is None
+
+    def test_subreference2_raises_error_on_single_object(self):
+        """Test subreference2 raises ValueError when URN is not a range."""
+        urn = Cite2Urn(
+            urn_type="cite2",
+            namespace="hmt",
+            collection="data",
+            object_id="obj2@region2"
+        )
+        with pytest.raises(ValueError) as exc_info:
+            urn.subreference2()
+        assert "subreference2 can only be called on range URNs" in str(exc_info.value)
+
+    def test_subreference2_raises_error_on_none_object(self):
+        """Test subreference2 raises ValueError when object_id is None."""
+        urn = Cite2Urn(
+            urn_type="cite2",
+            namespace="hmt",
+            collection="data"
+        )
+        with pytest.raises(ValueError) as exc_info:
+            urn.subreference2()
+        assert "subreference2 can only be called on range URNs" in str(exc_info.value)
+
+    def test_subreference2_with_complex_subreference(self):
+        """Test subreference2 with a complex subreference string."""
+        urn = Cite2Urn(
+            urn_type="cite2",
+            namespace="hmt",
+            collection="data",
+            object_id="obj1-obj2@roi[5,6,7,8]"
+        )
+        assert urn.subreference2() == "roi[5,6,7,8]"
+
+
+class TestCite2UrnSubreferenceValidation:
+    """Tests for subreference validation in Cite2Urn."""
+
+    def test_multiple_subreferences_in_single_object_constructor(self):
+        """Test that multiple @ signs in a single object raise ValueError in constructor."""
+        from pydantic import ValidationError
+        with pytest.raises(ValidationError) as exc_info:
+            Cite2Urn(
+                urn_type="cite2",
+                namespace="hmt",
+                collection="data",
+                object_id="obj1@region1@region2"
+            )
+        assert "at most one @ delimiter" in str(exc_info.value)
+
+    def test_multiple_subreferences_in_single_object_from_string(self):
+        """Test that multiple @ signs in a single object raise ValueError in from_string."""
+        with pytest.raises(ValueError) as exc_info:
+            Cite2Urn.from_string("urn:cite2:hmt:data:obj1@region1@region2")
+        assert "at most one @ delimiter" in str(exc_info.value)
+
+    def test_multiple_subreferences_in_range_first_part_constructor(self):
+        """Test that multiple @ signs in first range part raise ValueError in constructor."""
+        from pydantic import ValidationError
+        with pytest.raises(ValidationError) as exc_info:
+            Cite2Urn(
+                urn_type="cite2",
+                namespace="hmt",
+                collection="data",
+                object_id="obj1@region1@extra-obj2"
+            )
+        assert "at most one @ delimiter" in str(exc_info.value)
+
+    def test_multiple_subreferences_in_range_first_part_from_string(self):
+        """Test that multiple @ signs in first range part raise ValueError in from_string."""
+        with pytest.raises(ValueError) as exc_info:
+            Cite2Urn.from_string("urn:cite2:hmt:data:obj1@region1@extra-obj2")
+        assert "at most one @ delimiter" in str(exc_info.value)
+
+    def test_multiple_subreferences_in_range_second_part_constructor(self):
+        """Test that multiple @ signs in second range part raise ValueError in constructor."""
+        from pydantic import ValidationError
+        with pytest.raises(ValidationError) as exc_info:
+            Cite2Urn(
+                urn_type="cite2",
+                namespace="hmt",
+                collection="data",
+                object_id="obj1-obj2@region2@extra"
+            )
+        assert "at most one @ delimiter" in str(exc_info.value)
+
+    def test_multiple_subreferences_in_range_second_part_from_string(self):
+        """Test that multiple @ signs in second range part raise ValueError in from_string."""
+        with pytest.raises(ValueError) as exc_info:
+            Cite2Urn.from_string("urn:cite2:hmt:data:obj1-obj2@region2@extra")
+        assert "at most one @ delimiter" in str(exc_info.value)
+
+    def test_empty_subreference_single_object_constructor(self):
+        """Test that empty subreference in single object raises ValueError in constructor."""
+        from pydantic import ValidationError
+        with pytest.raises(ValidationError) as exc_info:
+            Cite2Urn(
+                urn_type="cite2",
+                namespace="hmt",
+                collection="data",
+                object_id="obj1@"
+            )
+        assert "Subreference cannot be empty" in str(exc_info.value)
+
+    def test_empty_subreference_single_object_from_string(self):
+        """Test that empty subreference in single object raises ValueError in from_string."""
+        with pytest.raises(ValueError) as exc_info:
+            Cite2Urn.from_string("urn:cite2:hmt:data:obj1@")
+        assert "Subreference cannot be empty" in str(exc_info.value)
+
+    def test_empty_subreference_range_first_part_constructor(self):
+        """Test that empty subreference in first range part raises ValueError in constructor."""
+        from pydantic import ValidationError
+        with pytest.raises(ValidationError) as exc_info:
+            Cite2Urn(
+                urn_type="cite2",
+                namespace="hmt",
+                collection="data",
+                object_id="obj1@-obj2"
+            )
+        assert "Subreference cannot be empty" in str(exc_info.value)
+
+    def test_empty_subreference_range_first_part_from_string(self):
+        """Test that empty subreference in first range part raises ValueError in from_string."""
+        with pytest.raises(ValueError) as exc_info:
+            Cite2Urn.from_string("urn:cite2:hmt:data:obj1@-obj2")
+        assert "Subreference cannot be empty" in str(exc_info.value)
+
+    def test_empty_subreference_range_second_part_constructor(self):
+        """Test that empty subreference in second range part raises ValueError in constructor."""
+        from pydantic import ValidationError
+        with pytest.raises(ValidationError) as exc_info:
+            Cite2Urn(
+                urn_type="cite2",
+                namespace="hmt",
+                collection="data",
+                object_id="obj1-obj2@"
+            )
+        assert "Subreference cannot be empty" in str(exc_info.value)
+
+    def test_empty_subreference_range_second_part_from_string(self):
+        """Test that empty subreference in second range part raises ValueError in from_string."""
+        with pytest.raises(ValueError) as exc_info:
+            Cite2Urn.from_string("urn:cite2:hmt:data:obj1-obj2@")
+        assert "Subreference cannot be empty" in str(exc_info.value)
+
+    def test_valid_single_subreference_single_object(self):
+        """Test that a single @ sign in a single object is valid."""
+        urn = Cite2Urn(
+            urn_type="cite2",
+            namespace="hmt",
+            collection="data",
+            object_id="obj1@region1"
+        )
+        assert urn.object_id == "obj1@region1"
+        assert urn.has_subreference() is True
+
+    def test_valid_single_subreference_range_first_part(self):
+        """Test that a single @ sign in first range part is valid."""
+        urn = Cite2Urn(
+            urn_type="cite2",
+            namespace="hmt",
+            collection="data",
+            object_id="obj1@region1-obj2"
+        )
+        assert urn.object_id == "obj1@region1-obj2"
+        assert urn.has_subreference() is True
+
+    def test_valid_single_subreference_range_second_part(self):
+        """Test that a single @ sign in second range part is valid."""
+        urn = Cite2Urn(
+            urn_type="cite2",
+            namespace="hmt",
+            collection="data",
+            object_id="obj1-obj2@region2"
+        )
+        assert urn.object_id == "obj1-obj2@region2"
+        assert urn.has_subreference() is True
+
+    def test_valid_single_subreference_both_range_parts(self):
+        """Test that one @ sign in each range part is valid."""
+        urn = Cite2Urn(
+            urn_type="cite2",
+            namespace="hmt",
+            collection="data",
+            object_id="obj1@region1-obj2@region2"
+        )
+        assert urn.object_id == "obj1@region1-obj2@region2"
+        assert urn.has_subreference() is True
+
+    def test_valid_subreference_from_string_single_object(self):
+        """Test that from_string accepts single @ in object."""
+        urn = Cite2Urn.from_string("urn:cite2:hmt:data:obj1@region1")
+        assert urn.object_id == "obj1@region1"
+        assert urn.has_subreference() is True
+
+    def test_valid_subreference_from_string_range(self):
+        """Test that from_string accepts single @ in range parts."""
+        urn = Cite2Urn.from_string("urn:cite2:hmt:data:obj1@region1-obj2@region2")
+        assert urn.object_id == "obj1@region1-obj2@region2"
+        assert urn.has_subreference() is True
