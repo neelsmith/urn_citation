@@ -10,8 +10,8 @@ class CtsUrn(Urn):
         namespace (str): Required identifier for the namespace of the text (e.g., "greekLit" or "latinLit") where values for the work hierarchy are defined.
         text_group (str): Required identifier for text group.
         work (str): Optional identifier for work.
-        version(str): Optional identifier for version (edition or translation) of the work.
-        exemplar(str): Optional identifier for exemplar (specific copy of the version) of the work.
+        version (str): Optional identifier for version (edition or translation) of the work.
+        exemplar (str): Optional identifier for exemplar (specific copy of the version) of the work.
         passage (str): Optional identifier for passage of the work, at any depth of the citation hierarchy appropriate for the work (e.g., book, chapter, verse, line, token). May identify either a single passage or a range of passages.
     """    
     namespace: str

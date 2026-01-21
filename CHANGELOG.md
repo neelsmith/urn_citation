@@ -12,6 +12,7 @@ No changes to python code; only documentation updates.
 ### Added
 
 - automated build of API documentation using MkDocs and mkdocstrings.
+- automated publication of current API documentation to GitHub Pages upon commits to the main branch.
 
 
 ## 0.7.0 - 2026-01-21
