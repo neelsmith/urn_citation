@@ -85,7 +85,7 @@ Where:
 
 ## License
 
-See the LICENSE file for details.
+See the [LICENSE file](https://github.com/neelsmith/urn_citation/blob/main/LICENSE) for details.
 
 
 ## Documentation
