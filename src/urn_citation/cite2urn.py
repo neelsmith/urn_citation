@@ -14,6 +14,30 @@ class Cite2Urn(Urn):
     version: str | None = None
     object_id: str | None = None
 
+    @model_validator(mode='after')
+    def validate_subreferences(self):
+        """Validate subreferences in object identifier.
+        
+        Ensures that:
+        - object_id component has at most one @ per range part
+        - subreferences are not empty
+        
+        Raises:
+            ValueError: If the subreference constraints are violated.
+        """
+        if self.object_id is not None:
+            range_parts = self.object_id.split("-")
+            for part in range_parts:
+                if part.count("@") > 1:
+                    raise ValueError(f"Each object component can have at most one @ delimiter for subreference, found {part.count('@')} in '{part}'")
+                # Check for empty subreferences
+                if "@" in part:
+                    subref_parts = part.split("@")
+                    if len(subref_parts) != 2 or not subref_parts[1]:
+                        raise ValueError(f"Subreference cannot be empty, found empty subreference in '{part}'")
+        
+        return self
+
     @classmethod
     def from_string(cls, raw_string: str) -> "Cite2Urn":
         """Parse a ``urn:cite2`` string into a ``Cite2Urn`` instance.
@@ -62,6 +86,16 @@ class Cite2Urn(Urn):
         if any(part == "" for part in object_parts):
             raise ValueError("Object component must contain non-empty identifiers")
 
+        # Validate subreferences (at most one @ per range part, no empty subreferences)
+        for part in object_parts:
+            if part.count("@") > 1:
+                raise ValueError(f"Each object component can have at most one @ delimiter for subreference, found {part.count('@')} in '{part}'")
+            # Check for empty subreferences
+            if "@" in part:
+                subref_parts = part.split("@")
+                if len(subref_parts) != 2 or not subref_parts[1]:
+                    raise ValueError(f"Subreference cannot be empty, found empty subreference in '{part}'")
+
         object_id = object_info
 
         return cls(
@@ -101,6 +135,122 @@ class Cite2Urn(Urn):
         if not self.is_range():
             return None
         return self.object_id.split("-")[1]
+
+    def has_subreference(self) -> bool:
+        """Check if the object identifier has a subreference.
+        
+        An object identifier has a subreference if it contains at least one @ character,
+        which may appear on either or both parts of a range reference, or on
+        a single reference.
+        
+        Returns:
+            bool: True if the object identifier contains a subreference (@ character), False otherwise.
+        """
+        if self.object_id is None:
+            return False
+        
+        return "@" in self.object_id
+
+    def has_subreference1(self) -> bool:
+        """Check if the range begin part has a subreference.
+        
+        Returns True if the URN is a range and the range begin part contains
+        a @ character indicating a subreference.
+        
+        Returns:
+            bool: True if the range begin part has a subreference, False otherwise.
+        
+        Raises:
+            ValueError: If the URN is not a range.
+        """
+        if not self.is_range():
+            raise ValueError("has_subreference1 can only be called on range URNs")
+        
+        range_begin = self.range_begin()
+        return "@" in range_begin if range_begin else False
+
+    def has_subreference2(self) -> bool:
+        """Check if the range end part has a subreference.
+        
+        Returns True if the URN is a range and the range end part contains
+        a @ character indicating a subreference.
+        
+        Returns:
+            bool: True if the range end part has a subreference, False otherwise.
+        
+        Raises:
+            ValueError: If the URN is not a range.
+        """
+        if not self.is_range():
+            raise ValueError("has_subreference2 can only be called on range URNs")
+        
+        range_end = self.range_end()
+        return "@" in range_end if range_end else False
+
+    def subreference(self) -> str | None:
+        """Get the subreference part of an object identifier.
+        
+        Returns the subreference part (the text after @) if the object identifier has a subreference.
+        Returns None if the object identifier has no subreference.
+        
+        Returns:
+            str | None: The subreference part, or None if no subreference exists.
+        
+        Raises:
+            ValueError: If the URN is a range reference.
+        """
+        if self.is_range():
+            raise ValueError("subreference can only be called on non-range URNs")
+        
+        if self.object_id is None or "@" not in self.object_id:
+            return None
+        
+        parts = self.object_id.split("@")
+        return parts[1]
+
+    def subreference1(self) -> str | None:
+        """Get the subreference part of the range begin reference.
+        
+        Returns the subreference part (the text after @) of the range begin part
+        if it has a subreference. Returns None if the range begin part has no subreference.
+        
+        Returns:
+            str | None: The subreference part of the range begin, or None if no subreference exists.
+        
+        Raises:
+            ValueError: If the URN is not a range reference.
+        """
+        if not self.is_range():
+            raise ValueError("subreference1 can only be called on range URNs")
+        
+        range_begin = self.range_begin()
+        if range_begin is None or "@" not in range_begin:
+            return None
+        
+        parts = range_begin.split("@")
+        return parts[1]
+
+    def subreference2(self) -> str | None:
+        """Get the subreference part of the range end reference.
+        
+        Returns the subreference part (the text after @) of the range end part
+        if it has a subreference. Returns None if the range end part has no subreference.
+        
+        Returns:
+            str | None: The subreference part of the range end, or None if no subreference exists.
+        
+        Raises:
+            ValueError: If the URN is not a range reference.
+        """
+        if not self.is_range():
+            raise ValueError("subreference2 can only be called on range URNs")
+        
+        range_end = self.range_end()
+        if range_end is None or "@" not in range_end:
+            return None
+        
+        parts = range_end.split("@")
+        return parts[1]
 
     @classmethod
     def valid_string(cls, raw_string: str) -> bool:

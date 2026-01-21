@@ -292,6 +292,683 @@ class TestCtsUrnRangeEnd:
         assert urn.range_end() is None
 
 
+class TestCtsUrnHasSubreference:
+    """Tests for the has_subreference method."""
+
+    def test_has_subreference_single_passage_with_subreference(self):
+        """Test has_subreference returns True for a single passage with subreference."""
+        urn = CtsUrn(
+            urn_type="cts",
+            namespace="greekLit",
+            text_group="tlg0012",
+            work="tlg001",
+            passage="1.1@μῆνιν"
+        )
+        assert urn.has_subreference() is True
+
+    def test_has_subreference_single_passage_without_subreference(self):
+        """Test has_subreference returns False for a single passage without subreference."""
+        urn = CtsUrn(
+            urn_type="cts",
+            namespace="greekLit",
+            text_group="tlg0012",
+            passage="1.1"
+        )
+        assert urn.has_subreference() is False
+
+    def test_has_subreference_range_with_subreference_on_both_parts(self):
+        """Test has_subreference returns True when both range parts have subreferences."""
+        urn = CtsUrn(
+            urn_type="cts",
+            namespace="greekLit",
+            text_group="tlg0012",
+            work="tlg001",
+            passage="1.1@μῆνιν-1.1@θεά"
+        )
+        assert urn.has_subreference() is True
+
+    def test_has_subreference_range_with_subreference_on_first_part(self):
+        """Test has_subreference returns True when only first range part has subreference."""
+        urn = CtsUrn(
+            urn_type="cts",
+            namespace="greekLit",
+            text_group="tlg0012",
+            work="tlg001",
+            passage="1.1@μῆνιν-1.2"
+        )
+        assert urn.has_subreference() is True
+
+    def test_has_subreference_range_with_subreference_on_second_part(self):
+        """Test has_subreference returns True when only second range part has subreference."""
+        urn = CtsUrn(
+            urn_type="cts",
+            namespace="greekLit",
+            text_group="tlg0012",
+            work="tlg001",
+            passage="1.1-1.2@οὐλομένην"
+        )
+        assert urn.has_subreference() is True
+
+    def test_has_subreference_range_without_subreference(self):
+        """Test has_subreference returns False for a range without any subreferences."""
+        urn = CtsUrn(
+            urn_type="cts",
+            namespace="greekLit",
+            text_group="tlg0012",
+            passage="1.1-1.5"
+        )
+        assert urn.has_subreference() is False
+
+    def test_has_subreference_none_passage(self):
+        """Test has_subreference returns False when passage is None."""
+        urn = CtsUrn(
+            urn_type="cts",
+            namespace="greekLit",
+            text_group="tlg0012"
+        )
+        assert urn.has_subreference() is False
+
+    def test_has_subreference_empty_string_passage(self):
+        """Test has_subreference returns False for empty string passage."""
+        urn = CtsUrn(
+            urn_type="cts",
+            namespace="greekLit",
+            text_group="tlg0012",
+            passage=""
+        )
+        assert urn.has_subreference() is False
+
+
+class TestCtsUrnHasSubreference1:
+    """Tests for the has_subreference1 method."""
+
+    def test_has_subreference1_range_with_subreference_on_first_part(self):
+        """Test has_subreference1 returns True when first range part has subreference."""
+        urn = CtsUrn(
+            urn_type="cts",
+            namespace="greekLit",
+            text_group="tlg0012",
+            work="tlg001",
+            passage="1.1@μῆνιν-1.2"
+        )
+        assert urn.has_subreference1() is True
+
+    def test_has_subreference1_range_without_subreference_on_first_part(self):
+        """Test has_subreference1 returns False when first range part lacks subreference."""
+        urn = CtsUrn(
+            urn_type="cts",
+            namespace="greekLit",
+            text_group="tlg0012",
+            work="tlg001",
+            passage="1.1-1.2@θεά"
+        )
+        assert urn.has_subreference1() is False
+
+    def test_has_subreference1_range_with_subreference_on_both_parts(self):
+        """Test has_subreference1 returns True when both range parts have subreferences."""
+        urn = CtsUrn(
+            urn_type="cts",
+            namespace="greekLit",
+            text_group="tlg0012",
+            work="tlg001",
+            passage="1.1@μῆνιν-1.2@θεά"
+        )
+        assert urn.has_subreference1() is True
+
+    def test_has_subreference1_range_without_any_subreference(self):
+        """Test has_subreference1 returns False when neither range part has subreference."""
+        urn = CtsUrn(
+            urn_type="cts",
+            namespace="greekLit",
+            text_group="tlg0012",
+            work="tlg001",
+            passage="1.1-1.5"
+        )
+        assert urn.has_subreference1() is False
+
+    def test_has_subreference1_raises_error_on_single_passage(self):
+        """Test has_subreference1 raises ValueError when URN is not a range."""
+        urn = CtsUrn(
+            urn_type="cts",
+            namespace="greekLit",
+            text_group="tlg0012",
+            work="tlg001",
+            passage="1.1@μῆνιν"
+        )
+        with pytest.raises(ValueError) as exc_info:
+            urn.has_subreference1()
+        assert "has_subreference1 can only be called on range URNs" in str(exc_info.value)
+
+    def test_has_subreference1_raises_error_on_none_passage(self):
+        """Test has_subreference1 raises ValueError when passage is None."""
+        urn = CtsUrn(
+            urn_type="cts",
+            namespace="greekLit",
+            text_group="tlg0012"
+        )
+        with pytest.raises(ValueError) as exc_info:
+            urn.has_subreference1()
+        assert "has_subreference1 can only be called on range URNs" in str(exc_info.value)
+
+
+class TestCtsUrnHasSubreference2:
+    """Tests for the has_subreference2 method."""
+
+    def test_has_subreference2_range_with_subreference_on_second_part(self):
+        """Test has_subreference2 returns True when second range part has subreference."""
+        urn = CtsUrn(
+            urn_type="cts",
+            namespace="greekLit",
+            text_group="tlg0012",
+            work="tlg001",
+            passage="1.1-1.2@θεά"
+        )
+        assert urn.has_subreference2() is True
+
+    def test_has_subreference2_range_without_subreference_on_second_part(self):
+        """Test has_subreference2 returns False when second range part lacks subreference."""
+        urn = CtsUrn(
+            urn_type="cts",
+            namespace="greekLit",
+            text_group="tlg0012",
+            work="tlg001",
+            passage="1.1@μῆνιν-1.2"
+        )
+        assert urn.has_subreference2() is False
+
+    def test_has_subreference2_range_with_subreference_on_both_parts(self):
+        """Test has_subreference2 returns True when both range parts have subreferences."""
+        urn = CtsUrn(
+            urn_type="cts",
+            namespace="greekLit",
+            text_group="tlg0012",
+            work="tlg001",
+            passage="1.1@μῆνιν-1.2@θεά"
+        )
+        assert urn.has_subreference2() is True
+
+    def test_has_subreference2_range_without_any_subreference(self):
+        """Test has_subreference2 returns False when neither range part has subreference."""
+        urn = CtsUrn(
+            urn_type="cts",
+            namespace="greekLit",
+            text_group="tlg0012",
+            work="tlg001",
+            passage="1.1-1.5"
+        )
+        assert urn.has_subreference2() is False
+
+    def test_has_subreference2_raises_error_on_single_passage(self):
+        """Test has_subreference2 raises ValueError when URN is not a range."""
+        urn = CtsUrn(
+            urn_type="cts",
+            namespace="greekLit",
+            text_group="tlg0012",
+            work="tlg001",
+            passage="1.2@θεά"
+        )
+        with pytest.raises(ValueError) as exc_info:
+            urn.has_subreference2()
+        assert "has_subreference2 can only be called on range URNs" in str(exc_info.value)
+
+    def test_has_subreference2_raises_error_on_none_passage(self):
+        """Test has_subreference2 raises ValueError when passage is None."""
+        urn = CtsUrn(
+            urn_type="cts",
+            namespace="greekLit",
+            text_group="tlg0012"
+        )
+        with pytest.raises(ValueError) as exc_info:
+            urn.has_subreference2()
+        assert "has_subreference2 can only be called on range URNs" in str(exc_info.value)
+
+
+class TestCtsUrnSubreference:
+    """Tests for the subreference method."""
+
+    def test_subreference_single_passage_with_subreference(self):
+        """Test subreference returns the subreference part for a single passage."""
+        urn = CtsUrn(
+            urn_type="cts",
+            namespace="greekLit",
+            text_group="tlg0012",
+            work="tlg001",
+            passage="1.1@μῆνιν"
+        )
+        assert urn.subreference() == "μῆνιν"
+
+    def test_subreference_single_passage_without_subreference(self):
+        """Test subreference returns None for a single passage without subreference."""
+        urn = CtsUrn(
+            urn_type="cts",
+            namespace="greekLit",
+            text_group="tlg0012",
+            work="tlg001",
+            passage="1.1"
+        )
+        assert urn.subreference() is None
+
+    def test_subreference_none_passage(self):
+        """Test subreference returns None when passage is None."""
+        urn = CtsUrn(
+            urn_type="cts",
+            namespace="greekLit",
+            text_group="tlg0012"
+        )
+        assert urn.subreference() is None
+
+    def test_subreference_raises_error_on_range(self):
+        """Test subreference raises ValueError when URN is a range."""
+        urn = CtsUrn(
+            urn_type="cts",
+            namespace="greekLit",
+            text_group="tlg0012",
+            work="tlg001",
+            passage="1.1@μῆνιν-1.2@θεά"
+        )
+        with pytest.raises(ValueError) as exc_info:
+            urn.subreference()
+        assert "subreference can only be called on non-range URNs" in str(exc_info.value)
+
+    def test_subreference_raises_error_on_range_without_subreference(self):
+        """Test subreference raises ValueError for a range without subreferences."""
+        urn = CtsUrn(
+            urn_type="cts",
+            namespace="greekLit",
+            text_group="tlg0012",
+            work="tlg001",
+            passage="1.1-1.5"
+        )
+        with pytest.raises(ValueError) as exc_info:
+            urn.subreference()
+        assert "subreference can only be called on non-range URNs" in str(exc_info.value)
+
+    def test_subreference_with_complex_subreference(self):
+        """Test subreference with a complex subreference string."""
+        urn = CtsUrn(
+            urn_type="cts",
+            namespace="greekLit",
+            text_group="tlg0012",
+            work="tlg001",
+            passage="1.1@word1[2]"
+        )
+        assert urn.subreference() == "word1[2]"
+
+
+class TestCtsUrnSubreference1:
+    """Tests for the subreference1 method."""
+
+    def test_subreference1_range_with_subreference_on_first_part(self):
+        """Test subreference1 returns the subreference part of the range begin."""
+        urn = CtsUrn(
+            urn_type="cts",
+            namespace="greekLit",
+            text_group="tlg0012",
+            work="tlg001",
+            passage="1.1@μῆνιν-1.2"
+        )
+        assert urn.subreference1() == "μῆνιν"
+
+    def test_subreference1_range_without_subreference_on_first_part(self):
+        """Test subreference1 returns None when first range part lacks subreference."""
+        urn = CtsUrn(
+            urn_type="cts",
+            namespace="greekLit",
+            text_group="tlg0012",
+            work="tlg001",
+            passage="1.1-1.2@θεά"
+        )
+        assert urn.subreference1() is None
+
+    def test_subreference1_range_with_subreference_on_both_parts(self):
+        """Test subreference1 returns the first subreference when both parts have subreferences."""
+        urn = CtsUrn(
+            urn_type="cts",
+            namespace="greekLit",
+            text_group="tlg0012",
+            work="tlg001",
+            passage="1.1@μῆνιν-1.2@θεά"
+        )
+        assert urn.subreference1() == "μῆνιν"
+
+    def test_subreference1_range_without_any_subreference(self):
+        """Test subreference1 returns None when neither range part has subreference."""
+        urn = CtsUrn(
+            urn_type="cts",
+            namespace="greekLit",
+            text_group="tlg0012",
+            work="tlg001",
+            passage="1.1-1.5"
+        )
+        assert urn.subreference1() is None
+
+    def test_subreference1_raises_error_on_single_passage(self):
+        """Test subreference1 raises ValueError when URN is not a range."""
+        urn = CtsUrn(
+            urn_type="cts",
+            namespace="greekLit",
+            text_group="tlg0012",
+            work="tlg001",
+            passage="1.1@μῆνιν"
+        )
+        with pytest.raises(ValueError) as exc_info:
+            urn.subreference1()
+        assert "subreference1 can only be called on range URNs" in str(exc_info.value)
+
+    def test_subreference1_raises_error_on_none_passage(self):
+        """Test subreference1 raises ValueError when passage is None."""
+        urn = CtsUrn(
+            urn_type="cts",
+            namespace="greekLit",
+            text_group="tlg0012"
+        )
+        with pytest.raises(ValueError) as exc_info:
+            urn.subreference1()
+        assert "subreference1 can only be called on range URNs" in str(exc_info.value)
+
+    def test_subreference1_with_complex_subreference(self):
+        """Test subreference1 with a complex subreference string."""
+        urn = CtsUrn(
+            urn_type="cts",
+            namespace="greekLit",
+            text_group="tlg0012",
+            work="tlg001",
+            passage="1.1@word1[2]-1.2"
+        )
+        assert urn.subreference1() == "word1[2]"
+
+
+class TestCtsUrnSubreference2:
+    """Tests for the subreference2 method."""
+
+    def test_subreference2_range_with_subreference_on_second_part(self):
+        """Test subreference2 returns the subreference part of the range end."""
+        urn = CtsUrn(
+            urn_type="cts",
+            namespace="greekLit",
+            text_group="tlg0012",
+            work="tlg001",
+            passage="1.1-1.2@θεά"
+        )
+        assert urn.subreference2() == "θεά"
+
+    def test_subreference2_range_without_subreference_on_second_part(self):
+        """Test subreference2 returns None when second range part lacks subreference."""
+        urn = CtsUrn(
+            urn_type="cts",
+            namespace="greekLit",
+            text_group="tlg0012",
+            work="tlg001",
+            passage="1.1@μῆνιν-1.2"
+        )
+        assert urn.subreference2() is None
+
+    def test_subreference2_range_with_subreference_on_both_parts(self):
+        """Test subreference2 returns the second subreference when both parts have subreferences."""
+        urn = CtsUrn(
+            urn_type="cts",
+            namespace="greekLit",
+            text_group="tlg0012",
+            work="tlg001",
+            passage="1.1@μῆνιν-1.2@θεά"
+        )
+        assert urn.subreference2() == "θεά"
+
+    def test_subreference2_range_without_any_subreference(self):
+        """Test subreference2 returns None when neither range part has subreference."""
+        urn = CtsUrn(
+            urn_type="cts",
+            namespace="greekLit",
+            text_group="tlg0012",
+            work="tlg001",
+            passage="1.1-1.5"
+        )
+        assert urn.subreference2() is None
+
+    def test_subreference2_raises_error_on_single_passage(self):
+        """Test subreference2 raises ValueError when URN is not a range."""
+        urn = CtsUrn(
+            urn_type="cts",
+            namespace="greekLit",
+            text_group="tlg0012",
+            work="tlg001",
+            passage="1.2@θεά"
+        )
+        with pytest.raises(ValueError) as exc_info:
+            urn.subreference2()
+        assert "subreference2 can only be called on range URNs" in str(exc_info.value)
+
+    def test_subreference2_raises_error_on_none_passage(self):
+        """Test subreference2 raises ValueError when passage is None."""
+        urn = CtsUrn(
+            urn_type="cts",
+            namespace="greekLit",
+            text_group="tlg0012"
+        )
+        with pytest.raises(ValueError) as exc_info:
+            urn.subreference2()
+        assert "subreference2 can only be called on range URNs" in str(exc_info.value)
+
+    def test_subreference2_with_complex_subreference(self):
+        """Test subreference2 with a complex subreference string."""
+        urn = CtsUrn(
+            urn_type="cts",
+            namespace="greekLit",
+            text_group="tlg0012",
+            work="tlg001",
+            passage="1.1-1.2@word2[3]"
+        )
+        assert urn.subreference2() == "word2[3]"
+
+
+class TestCtsUrnSubreferenceValidation:
+    """Tests for subreference validation in CtsUrn."""
+
+    def test_multiple_subreferences_in_single_passage_constructor(self):
+        """Test that multiple @ signs in a single passage raise ValueError in constructor."""
+        with pytest.raises(ValidationError) as exc_info:
+            CtsUrn(
+                urn_type="cts",
+                namespace="greekLit",
+                text_group="tlg0012",
+                work="tlg001",
+                passage="1.1@μῆνιν@θεά"
+            )
+        assert "at most one @ delimiter" in str(exc_info.value)
+
+    def test_multiple_subreferences_in_single_passage_from_string(self):
+        """Test that multiple @ signs in a single passage raise ValueError in from_string."""
+        with pytest.raises(ValueError) as exc_info:
+            CtsUrn.from_string("urn:cts:greekLit:tlg0012.tlg001:1.1@μῆνιν@θεά")
+        assert "at most one @ delimiter" in str(exc_info.value)
+
+    def test_multiple_subreferences_in_range_first_part_constructor(self):
+        """Test that multiple @ signs in first range part raise ValueError in constructor."""
+        with pytest.raises(ValidationError) as exc_info:
+            CtsUrn(
+                urn_type="cts",
+                namespace="greekLit",
+                text_group="tlg0012",
+                work="tlg001",
+                passage="1.1@μῆνιν@extra-1.2"
+            )
+        assert "at most one @ delimiter" in str(exc_info.value)
+
+    def test_multiple_subreferences_in_range_first_part_from_string(self):
+        """Test that multiple @ signs in first range part raise ValueError in from_string."""
+        with pytest.raises(ValueError) as exc_info:
+            CtsUrn.from_string("urn:cts:greekLit:tlg0012.tlg001:1.1@μῆνιν@extra-1.2")
+        assert "at most one @ delimiter" in str(exc_info.value)
+
+    def test_multiple_subreferences_in_range_second_part_constructor(self):
+        """Test that multiple @ signs in second range part raise ValueError in constructor."""
+        with pytest.raises(ValidationError) as exc_info:
+            CtsUrn(
+                urn_type="cts",
+                namespace="greekLit",
+                text_group="tlg0012",
+                work="tlg001",
+                passage="1.1-1.2@οὐλομένην@extra"
+            )
+        assert "at most one @ delimiter" in str(exc_info.value)
+
+    def test_multiple_subreferences_in_range_second_part_from_string(self):
+        """Test that multiple @ signs in second range part raise ValueError in from_string."""
+        with pytest.raises(ValueError) as exc_info:
+            CtsUrn.from_string("urn:cts:greekLit:tlg0012.tlg001:1.1-1.2@οὐλομένην@extra")
+        assert "at most one @ delimiter" in str(exc_info.value)
+
+    def test_multiple_subreferences_in_both_range_parts_constructor(self):
+        """Test that multiple @ signs in both range parts raise ValueError in constructor."""
+        with pytest.raises(ValidationError) as exc_info:
+            CtsUrn(
+                urn_type="cts",
+                namespace="greekLit",
+                text_group="tlg0012",
+                work="tlg001",
+                passage="1.1@μῆνιν@extra-1.2@θεά@extra2"
+            )
+        assert "at most one @ delimiter" in str(exc_info.value)
+
+    def test_multiple_subreferences_in_both_range_parts_from_string(self):
+        """Test that multiple @ signs in both range parts raise ValueError in from_string."""
+        with pytest.raises(ValueError) as exc_info:
+            CtsUrn.from_string("urn:cts:greekLit:tlg0012.tlg001:1.1@μῆνιν@extra-1.2@θεά@extra2")
+        assert "at most one @ delimiter" in str(exc_info.value)
+
+    def test_valid_single_subreference_single_passage(self):
+        """Test that a single @ sign in a single passage is valid."""
+        urn = CtsUrn(
+            urn_type="cts",
+            namespace="greekLit",
+            text_group="tlg0012",
+            work="tlg001",
+            passage="1.1@μῆνιν"
+        )
+        assert urn.passage == "1.1@μῆνιν"
+        assert urn.has_subreference() is True
+
+    def test_valid_single_subreference_range_first_part(self):
+        """Test that a single @ sign in first range part is valid."""
+        urn = CtsUrn(
+            urn_type="cts",
+            namespace="greekLit",
+            text_group="tlg0012",
+            work="tlg001",
+            passage="1.1@μῆνιν-1.2"
+        )
+        assert urn.passage == "1.1@μῆνιν-1.2"
+        assert urn.has_subreference() is True
+
+    def test_valid_single_subreference_range_second_part(self):
+        """Test that a single @ sign in second range part is valid."""
+        urn = CtsUrn(
+            urn_type="cts",
+            namespace="greekLit",
+            text_group="tlg0012",
+            work="tlg001",
+            passage="1.1-1.2@οὐλομένην"
+        )
+        assert urn.passage == "1.1-1.2@οὐλομένην"
+        assert urn.has_subreference() is True
+
+    def test_valid_single_subreference_both_range_parts(self):
+        """Test that one @ sign in each range part is valid."""
+        urn = CtsUrn(
+            urn_type="cts",
+            namespace="greekLit",
+            text_group="tlg0012",
+            work="tlg001",
+            passage="1.1@μῆνιν-1.1@θεά"
+        )
+        assert urn.passage == "1.1@μῆνιν-1.1@θεά"
+        assert urn.has_subreference() is True
+
+    def test_valid_subreference_from_string_single_passage(self):
+        """Test that from_string accepts single @ in passage."""
+        urn = CtsUrn.from_string("urn:cts:greekLit:tlg0012.tlg001:1.1@μῆνιν")
+        assert urn.passage == "1.1@μῆνιν"
+        assert urn.has_subreference() is True
+
+    def test_valid_subreference_from_string_range(self):
+        """Test that from_string accepts single @ in range parts."""
+        urn = CtsUrn.from_string("urn:cts:greekLit:tlg0012.tlg001:1.1@μῆνιν-1.1@θεά")
+        assert urn.passage == "1.1@μῆνιν-1.1@θεά"
+        assert urn.has_subreference() is True
+
+    def test_empty_subreference_single_passage_constructor(self):
+        """Test that empty subreference in single passage raises ValueError in constructor."""
+        with pytest.raises(ValidationError) as exc_info:
+            CtsUrn(
+                urn_type="cts",
+                namespace="greekLit",
+                text_group="tlg0012",
+                work="tlg001",
+                passage="1.1@"
+            )
+        assert "Subreference cannot be empty" in str(exc_info.value)
+
+    def test_empty_subreference_single_passage_from_string(self):
+        """Test that empty subreference in single passage raises ValueError in from_string."""
+        with pytest.raises(ValueError) as exc_info:
+            CtsUrn.from_string("urn:cts:greekLit:tlg0012.tlg001:1.1@")
+        assert "Subreference cannot be empty" in str(exc_info.value)
+
+    def test_empty_subreference_range_first_part_constructor(self):
+        """Test that empty subreference in first range part raises ValueError in constructor."""
+        with pytest.raises(ValidationError) as exc_info:
+            CtsUrn(
+                urn_type="cts",
+                namespace="greekLit",
+                text_group="tlg0012",
+                work="tlg001",
+                passage="1.1@-1.2"
+            )
+        assert "Subreference cannot be empty" in str(exc_info.value)
+
+    def test_empty_subreference_range_first_part_from_string(self):
+        """Test that empty subreference in first range part raises ValueError in from_string."""
+        with pytest.raises(ValueError) as exc_info:
+            CtsUrn.from_string("urn:cts:greekLit:tlg0012.tlg001:1.1@-1.2")
+        assert "Subreference cannot be empty" in str(exc_info.value)
+
+    def test_empty_subreference_range_second_part_constructor(self):
+        """Test that empty subreference in second range part raises ValueError in constructor."""
+        with pytest.raises(ValidationError) as exc_info:
+            CtsUrn(
+                urn_type="cts",
+                namespace="greekLit",
+                text_group="tlg0012",
+                work="tlg001",
+                passage="1.1-1.2@"
+            )
+        assert "Subreference cannot be empty" in str(exc_info.value)
+
+    def test_empty_subreference_range_second_part_from_string(self):
+        """Test that empty subreference in second range part raises ValueError in from_string."""
+        with pytest.raises(ValueError) as exc_info:
+            CtsUrn.from_string("urn:cts:greekLit:tlg0012.tlg001:1.1-1.2@")
+        assert "Subreference cannot be empty" in str(exc_info.value)
+
+    def test_empty_subreference_both_range_parts_constructor(self):
+        """Test that empty subreferences in both range parts raise ValueError in constructor."""
+        with pytest.raises(ValidationError) as exc_info:
+            CtsUrn(
+                urn_type="cts",
+                namespace="greekLit",
+                text_group="tlg0012",
+                work="tlg001",
+                passage="1.1@-1.2@"
+            )
+        assert "Subreference cannot be empty" in str(exc_info.value)
+
+    def test_empty_subreference_both_range_parts_from_string(self):
+        """Test that empty subreferences in both range parts raise ValueError in from_string."""
+        with pytest.raises(ValueError) as exc_info:
+            CtsUrn.from_string("urn:cts:greekLit:tlg0012.tlg001:1.1@-1.2@")
+        assert "Subreference cannot be empty" in str(exc_info.value)
+
+
 class TestCtsUrnValidString:
     """Tests for the valid_string classmethod."""
 
