@@ -49,6 +49,11 @@ class CtsUrn(Urn):
             for part in range_parts:
                 if part.count("@") > 1:
                     raise ValueError(f"Each passage component can have at most one @ delimiter for subreference, found {part.count('@')} in '{part}'")
+                # Check for empty subreferences
+                if "@" in part:
+                    subref_parts = part.split("@")
+                    if len(subref_parts) != 2 or not subref_parts[1]:
+                        raise ValueError(f"Subreference cannot be empty, found empty subreference in '{part}'")
         
         return self
 
@@ -68,6 +73,11 @@ class CtsUrn(Urn):
         for part in rangeparts:
             if part.count("@") > 1:
                 raise ValueError(f"Each passage component can have at most one @ delimiter for subreference, found {part.count('@')} in '{part}'")
+            # Check for empty subreferences
+            if "@" in part:
+                subref_parts = part.split("@")
+                if len(subref_parts) != 2 or not subref_parts[1]:
+                    raise ValueError(f"Subreference cannot be empty, found empty subreference in '{part}'")
         
         if ".." in work_component:
             raise ValueError(f"Work component of CTS URN cannot contain successive periods, found in {work_component}.")
@@ -152,6 +162,107 @@ class CtsUrn(Urn):
             return False
         
         return "@" in self.passage
+
+    def has_subreference1(self) -> bool:
+        """Check if the range begin part has a subreference.
+        
+        Returns True if the URN is a range and the range begin part contains
+        a @ character indicating a subreference.
+        
+        Returns:
+            bool: True if the range begin part has a subreference, False otherwise.
+        
+        Raises:
+            ValueError: If the URN is not a range.
+        """
+        if not self.is_range():
+            raise ValueError("has_subreference1 can only be called on range URNs")
+        
+        range_begin = self.range_begin()
+        return "@" in range_begin if range_begin else False
+
+    def has_subreference2(self) -> bool:
+        """Check if the range end part has a subreference.
+        
+        Returns True if the URN is a range and the range end part contains
+        a @ character indicating a subreference.
+        
+        Returns:
+            bool: True if the range end part has a subreference, False otherwise.
+        
+        Raises:
+            ValueError: If the URN is not a range.
+        """
+        if not self.is_range():
+            raise ValueError("has_subreference2 can only be called on range URNs")
+        
+        range_end = self.range_end()
+        return "@" in range_end if range_end else False
+
+    def subreference(self) -> str | None:
+        """Get the subreference part of a passage reference.
+        
+        Returns the subreference part (the text after @) if the passage has a subreference.
+        Returns None if the passage has no subreference.
+        
+        Returns:
+            str | None: The subreference part, or None if no subreference exists.
+        
+        Raises:
+            ValueError: If the URN is a range reference.
+        """
+        if self.is_range():
+            raise ValueError("subreference can only be called on non-range URNs")
+        
+        if self.passage is None or "@" not in self.passage:
+            return None
+        
+        parts = self.passage.split("@")
+        return parts[1]
+
+    def subreference1(self) -> str | None:
+        """Get the subreference part of the range begin reference.
+        
+        Returns the subreference part (the text after @) of the range begin part
+        if it has a subreference. Returns None if the range begin part has no subreference.
+        
+        Returns:
+            str | None: The subreference part of the range begin, or None if no subreference exists.
+        
+        Raises:
+            ValueError: If the URN is not a range reference.
+        """
+        if not self.is_range():
+            raise ValueError("subreference1 can only be called on range URNs")
+        
+        range_begin = self.range_begin()
+        if range_begin is None or "@" not in range_begin:
+            return None
+        
+        parts = range_begin.split("@")
+        return parts[1]
+
+    def subreference2(self) -> str | None:
+        """Get the subreference part of the range end reference.
+        
+        Returns the subreference part (the text after @) of the range end part
+        if it has a subreference. Returns None if the range end part has no subreference.
+        
+        Returns:
+            str | None: The subreference part of the range end, or None if no subreference exists.
+        
+        Raises:
+            ValueError: If the URN is not a range reference.
+        """
+        if not self.is_range():
+            raise ValueError("subreference2 can only be called on range URNs")
+        
+        range_end = self.range_end()
+        if range_end is None or "@" not in range_end:
+            return None
+        
+        parts = range_end.split("@")
+        return parts[1]
 
     def range_begin(self) -> str | None:
         """Get the beginning of a passage range.
