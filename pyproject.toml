@@ -1,9 +1,14 @@
 [project]
 name = "urn-citation"
-version = "0.7.2"
+version = "0.7.3"
 description = "A Python library for working with CITE architecture URNs for scholarly citation."
 readme = "README.md"
-requires-python = ">=3.14"
+requires-python = ">=3.13.7"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+]
 dependencies = [
     "ipython",
     "pydantic>=2.12.5",
